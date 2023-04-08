@@ -6,18 +6,18 @@ import in.solomk.dictionary.api.dto.words.WordResponse;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
+import java.util.List;
 
 import static in.solomk.dictionary.service.language.SupportedLanguage.ENGLISH;
 import static in.solomk.dictionary.service.language.SupportedLanguage.UKRAINIAN;
-import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class WordsApiTest extends BaseFuncTest {
 
     @Test
     void returnsEmptyUserWords() {
-        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(emptyMap()));
+        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(emptyList()));
     }
 
     @Test
@@ -37,7 +37,7 @@ public class WordsApiTest extends BaseFuncTest {
                 .isEqualTo(new WordResponse(null, "word-1", "meaning-1"));
         assertThat(wordResponse.id()).isNotBlank();
 
-        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(Map.of(wordResponse.id(), wordResponse)));
+        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(List.of(wordResponse)));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class WordsApiTest extends BaseFuncTest {
                                                        .expectBody(WordResponse.class)
                                                        .returnResult()
                                                        .getResponseBody();
-        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(Map.of(wordResponse.id(), wordResponse)));
+        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(List.of(wordResponse)));
 
         userLanguagesTestClient.addLanguage(userToken, UKRAINIAN.getLanguageCode());
         WordResponse wordResponse2 = userWordsTestClient.addWord(userToken, UKRAINIAN.getLanguageCode(),
@@ -76,7 +76,7 @@ public class WordsApiTest extends BaseFuncTest {
                                                         .returnResult()
                                                         .getResponseBody();
 
-        verifyUserWordsResponse(UKRAINIAN, new UserWordsResponse(Map.of(wordResponse2.id(), wordResponse2)));
+        verifyUserWordsResponse(UKRAINIAN, new UserWordsResponse(List.of(wordResponse2)));
     }
 
     @Test
@@ -109,17 +109,17 @@ public class WordsApiTest extends BaseFuncTest {
                                                         .expectBody(WordResponse.class)
                                                         .returnResult()
                                                         .getResponseBody();
-        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(Map.of(wordResponse1.id(), wordResponse1, wordResponse2.id(), wordResponse2)));
+        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(List.of(wordResponse1, wordResponse2)));
 
         userWordsTestClient.deleteWord(userToken, ENGLISH.getLanguageCode(), wordResponse1.id())
                            .expectStatus()
                            .isOk();
-        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(Map.of(wordResponse2.id(), wordResponse2)));
+        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(List.of(wordResponse2)));
 
         userWordsTestClient.deleteWord(userToken, ENGLISH.getLanguageCode(), wordResponse2.id())
                            .expectStatus()
                            .isOk();
-        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(emptyMap()));
+        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(emptyList()));
     }
 
     @Test
@@ -141,7 +141,7 @@ public class WordsApiTest extends BaseFuncTest {
                                                         .returnResult()
                                                         .getResponseBody();
 
-        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(Map.of(wordResponse1.id(), wordResponse1, wordResponse2.id(), wordResponse2, wordResponse3.id(), wordResponse3)));
+        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(List.of(wordResponse1, wordResponse2, wordResponse3)));
     }
 
     private void verifyUserWordsResponse(SupportedLanguage language, UserWordsResponse expectedValue) {

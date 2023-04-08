@@ -1,6 +1,6 @@
 package in.solomk.dictionary.api.dto.words;
 
-import java.util.Map;
+import java.util.List;
 
-public record UserWordsResponse(Map<String, WordResponse> words) {
+public record UserWordsResponse(List<WordResponse> words) {
 }

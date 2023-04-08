@@ -63,7 +63,7 @@ public class LanguagesApiTest extends BaseFuncTest {
                            .expectBody()
                            .json("""
                                          {
-                                           "words": {}
+                                           "words": []
                                          }""", true);
     }
 

@@ -17,7 +17,7 @@ function WordsComponent() {
         dictionaryClient
             .getWords(currentLanguage)
             .then(userWords => {
-                setWords(Array.from(Object.values(userWords.words)));
+                setWords(userWords.words);
             });
     }, [currentLanguage, dictionaryClient])
 
@@ -31,7 +31,7 @@ function WordsComponent() {
 
     async function removeWord(word: Word) {
         const userWords = await dictionaryClient.deleteWord(currentLanguage!, word)
-        setWords(Array.from(Object.values(userWords.words)));
+        setWords(userWords.words);
     }
 
     return (

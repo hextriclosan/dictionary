@@ -16,7 +16,7 @@ public class UsersWordsService {
 
     public Mono<UserWords> getUserWords(String userId, SupportedLanguage language) {
         return repository.getUserWords(userId, language)
-                         .collectMap(Word::id, word -> word)
+                         .collectList()
                          .map(UserWords::new);
     }
 
