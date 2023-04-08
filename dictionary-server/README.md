@@ -2,24 +2,27 @@
 
 ## Required env variables
 
-* SPRING_DATA_MONGODB_URI
 * RSA_PRIVATEKEYCONTENT
 * RSA_PUBLICKEYCONTENT
-* SECURITY_USER_NAME
-* SECURITY_USER_PASSWORD
+* SECURITY_USER_NAME - username for actuator endpoint
+* SECURITY_USER_PASSWORD - password for actuator endpoint
+* SPRING_DATA_MONGODB_URI
+* GOOGLE_OAUTH2_CLIENT_ID
+* GOOGLE_OAUTH2_CLIENT_SECRET
 
 ## Run the application
+
+### Dev
+
+1. Specify all required env variables
+2. Run the server application with `local` profile (`npm start`)
+3. Run the client application with `development` profile
 
 ```bash
 
  docker run --rm \
-  -e FACEBOOK_OAUTH2_CLIENT_ID={value} \
-  -e FACEBOOK_OAUTH2_CLIENT_SECRET={value} \
   -e GOOGLE_OAUTH2_CLIENT_ID={value} \
   -e GOOGLE_OAUTH2_CLIENT_SECRET={value} \
-  -e OKTA_OAUTH2_CLIENT_ID={value} \
-  -e OKTA_OAUTH2_CLIENT_SECRET={value} \
-  -e OKTA_OAUTH2_DOMAIN={value} \
   -e RSA_PRIVATEKEYCONTENT={value} \
   -e RSA_PUBLICKEYCONTENT={value} \
   -e SPRING_DATA_MONGODB_URI={value} \

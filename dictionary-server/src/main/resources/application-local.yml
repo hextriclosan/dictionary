@@ -6,6 +6,10 @@ spring:
           google:
             redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
 
+security:
+  redirect:
+    web: http://localhost:3000
+
 debug: true
 logging:
   level:

@@ -8,8 +8,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 @Service
 @AllArgsConstructor
 public class UsersWordsService {
@@ -18,27 +16,21 @@ public class UsersWordsService {
 
     public Mono<UserWords> getUserWords(String userId, SupportedLanguage language) {
         return repository.getUserWords(userId, language)
-                         .switchIfEmpty(Mono.just(UserWords.EMPTY));
+                         .collectMap(Word::id, word -> word)
+                         .map(UserWords::new);
     }
 
     public Mono<UserWords> deleteUserWord(String userId, SupportedLanguage language, String wordId) {
-        return repository.getUserWords(userId, language)
-                         .switchIfEmpty(Mono.just(UserWords.EMPTY))
-                .map(userWords -> userWords.deleteWord(wordId))
-                .flatMap(userWords -> repository.saveUserWords(userId, language, userWords));
+        return repository.deleteWord(wordId)
+                         .then(getUserWords(userId, language));
     }
 
     public Mono<Void> deleteAllUserWords(String userId, SupportedLanguage language) {
-        return repository.deleteUserWords(userId, language);
+        return repository.deleteAllUserWords(userId, language);
     }
 
     public Mono<Word> saveWord(String userId, SupportedLanguage language, UnsavedWord unsavedWord) {
-        Word wordWithId = new Word(UUID.randomUUID().toString(), unsavedWord.wordText(), null, unsavedWord.translation());
-        return repository.getUserWords(userId, language)
-                         .switchIfEmpty(Mono.just(UserWords.EMPTY))
-                .map(userWords -> userWords.addWord(wordWithId))
-                .flatMap(userWords -> repository.saveUserWords(userId, language, userWords))
-                .thenReturn(wordWithId);
+        return repository.saveWord(userId, language, unsavedWord);
     }
 
 }

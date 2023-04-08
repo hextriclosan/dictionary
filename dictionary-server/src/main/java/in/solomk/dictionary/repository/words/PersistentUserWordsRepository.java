@@ -1,11 +1,13 @@
 package in.solomk.dictionary.repository.words;
 
-import in.solomk.dictionary.repository.words.document.UserWordsDocument;
+import in.solomk.dictionary.repository.words.document.WordDocument;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import in.solomk.dictionary.service.words.UserWordsRepository;
-import in.solomk.dictionary.service.words.model.UserWords;
+import in.solomk.dictionary.service.words.model.UnsavedWord;
+import in.solomk.dictionary.service.words.model.Word;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
@@ -15,24 +17,25 @@ public class PersistentUserWordsRepository implements UserWordsRepository {
     private final ReactiveMongoUserWordsRepository repository;
 
     @Override
-    public Mono<Void> deleteUserWords(String userId, SupportedLanguage language) {
-        return repository.deleteById(generateDocumentId(userId, language));
+    public Mono<Void> deleteAllUserWords(String userId, SupportedLanguage language) {
+        return repository.deleteByUserIdAndLanguageCode(userId, language.getLanguageCode());
     }
 
     @Override
-    public Mono<UserWords> saveUserWords(String userId, SupportedLanguage language, UserWords userWords) {
-        var documentId = generateDocumentId(userId, language);
-        return repository.save(UserWordsDocument.valueOf(documentId, userWords))
-                .map(UserWordsDocument::toModel);
+    public Mono<Void> deleteWord(String wordId) {
+        return repository.deleteById(wordId);
     }
 
     @Override
-    public Mono<UserWords> getUserWords(String userId, SupportedLanguage language) {
-        return repository.findById(generateDocumentId(userId, language))
-                .map(UserWordsDocument::toModel);
+    public Mono<Word> saveWord(String userId, SupportedLanguage language, UnsavedWord unsavedWord) {
+        return repository.save(new WordDocument(null, userId, language.getLanguageCode(),
+                                                unsavedWord.wordText(), null, unsavedWord.translation()))
+                         .map(WordDocument::toModel);
     }
 
-    private String generateDocumentId(String userId, SupportedLanguage language) {
-        return userId + "_" + language.getLanguageCode();
+    @Override
+    public Flux<Word> getUserWords(String userId, SupportedLanguage language) {
+        return repository.findAllByUserIdAndLanguageCode(userId, language.getLanguageCode())
+                         .map(WordDocument::toModel);
     }
 }

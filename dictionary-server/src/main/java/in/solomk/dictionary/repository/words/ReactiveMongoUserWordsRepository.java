@@ -1,7 +1,13 @@
 package in.solomk.dictionary.repository.words;
 
-import in.solomk.dictionary.repository.words.document.UserWordsDocument;
+import in.solomk.dictionary.repository.words.document.WordDocument;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-public interface ReactiveMongoUserWordsRepository extends ReactiveMongoRepository<UserWordsDocument, String> {
+public interface ReactiveMongoUserWordsRepository extends ReactiveMongoRepository<WordDocument, String> {
+
+    Mono<Void> deleteByUserIdAndLanguageCode(String userId, String languageCode);
+
+    Flux<WordDocument> findAllByUserIdAndLanguageCode(String userId, String languageCode);
 }

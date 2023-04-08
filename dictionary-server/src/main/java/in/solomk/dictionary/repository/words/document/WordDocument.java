@@ -1,17 +1,19 @@
 package in.solomk.dictionary.repository.words.document;
 
 import in.solomk.dictionary.service.words.model.Word;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "user_words")
 public record WordDocument(
+        @Id
         String id,
+        String userId,
+        String languageCode,
         String wordText,
         String meaning,
         String translation
 ) {
-
-    public static WordDocument valueOf(Word word) {
-        return new WordDocument(word.id(), word.wordText(), word.meaning(), word.translation());
-    }
 
     public Word toModel() {
         return new Word(id, wordText, meaning, translation);

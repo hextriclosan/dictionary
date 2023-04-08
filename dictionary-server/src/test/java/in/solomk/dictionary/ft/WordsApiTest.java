@@ -122,6 +122,28 @@ public class WordsApiTest extends BaseFuncTest {
         verifyUserWordsResponse(ENGLISH, new UserWordsResponse(emptyMap()));
     }
 
+    @Test
+    void returnsWordsInOrderOfCreation() {
+        userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
+        WordResponse wordResponse1 = userWordsTestClient.addWord(userToken, ENGLISH.getLanguageCode(),
+                                                                 new CreateWordRequest("z-word", "meaning-1"))
+                                                        .expectBody(WordResponse.class)
+                                                        .returnResult()
+                                                        .getResponseBody();
+        WordResponse wordResponse2 = userWordsTestClient.addWord(userToken, ENGLISH.getLanguageCode(),
+                                                                 new CreateWordRequest("x-word", "meaning-2"))
+                                                        .expectBody(WordResponse.class)
+                                                        .returnResult()
+                                                        .getResponseBody();
+        WordResponse wordResponse3 = userWordsTestClient.addWord(userToken, ENGLISH.getLanguageCode(),
+                                                                 new CreateWordRequest("y-word", "meaning-3"))
+                                                        .expectBody(WordResponse.class)
+                                                        .returnResult()
+                                                        .getResponseBody();
+
+        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(Map.of(wordResponse1.id(), wordResponse1, wordResponse2.id(), wordResponse2, wordResponse3.id(), wordResponse3)));
+    }
+
     private void verifyUserWordsResponse(SupportedLanguage language, UserWordsResponse expectedValue) {
         userWordsTestClient.getUserWords(userToken, language.getLanguageCode())
                            .expectStatus()
