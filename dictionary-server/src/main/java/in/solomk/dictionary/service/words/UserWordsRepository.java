@@ -15,5 +15,7 @@ public interface UserWordsRepository {
 
     Mono<Word> saveWord(String userId, SupportedLanguage language, UnsavedWord unsavedWord);
 
+    Mono<Word> editWord(String userId, SupportedLanguage language, Word word);
+
     Flux<Word> getUserWords(String userId, SupportedLanguage language);
 }

@@ -1,6 +1,7 @@
 package in.solomk.dictionary.ft;
 
 import in.solomk.dictionary.api.dto.words.CreateWordRequest;
+import in.solomk.dictionary.api.dto.words.EditWordRequest;
 import in.solomk.dictionary.api.dto.words.UserWordsResponse;
 import in.solomk.dictionary.api.dto.words.WordResponse;
 import in.solomk.dictionary.service.language.SupportedLanguage;
@@ -142,6 +143,34 @@ public class WordsApiTest extends BaseFuncTest {
                                                         .getResponseBody();
 
         verifyUserWordsResponse(ENGLISH, new UserWordsResponse(List.of(wordResponse1, wordResponse2, wordResponse3)));
+    }
+
+    @Test
+    void editsWord() {
+        userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
+        WordResponse wordResponse = userWordsTestClient.addWord(userToken, ENGLISH.getLanguageCode(),
+                                                                new CreateWordRequest("word-1", "meaning-1"))
+                                                       .expectBody(WordResponse.class)
+                                                       .returnResult()
+                                                       .getResponseBody();
+        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(List.of(wordResponse)));
+
+        var request = new EditWordRequest("word-1-edited", "meaning-1-edited");
+        WordResponse editedWordResponse = userWordsTestClient.editWord(userToken, ENGLISH.getLanguageCode(),
+                                                                       wordResponse.id(), request)
+                                                             .expectStatus().isOk()
+                                                             .expectBody(WordResponse.class)
+                                                             .returnResult()
+                                                             .getResponseBody();
+
+        assertThat(editedWordResponse).isNotNull();
+        assertThat(editedWordResponse)
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(new WordResponse(null, "word-1-edited", "meaning-1-edited"));
+        assertThat(editedWordResponse.id()).isNotBlank();
+
+        verifyUserWordsResponse(ENGLISH, new UserWordsResponse(List.of(editedWordResponse)));
     }
 
     private void verifyUserWordsResponse(SupportedLanguage language, UserWordsResponse expectedValue) {

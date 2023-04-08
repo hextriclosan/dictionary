@@ -33,4 +33,8 @@ public class UsersWordsService {
         return repository.saveWord(userId, language, unsavedWord);
     }
 
+    public Mono<Word> editWord(String userId, SupportedLanguage language, Word word) {
+        return repository.editWord(userId, language, word);
+    }
+
 }

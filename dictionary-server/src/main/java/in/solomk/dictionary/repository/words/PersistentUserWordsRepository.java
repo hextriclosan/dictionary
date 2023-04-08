@@ -6,6 +6,10 @@ import in.solomk.dictionary.service.words.UserWordsRepository;
 import in.solomk.dictionary.service.words.model.UnsavedWord;
 import in.solomk.dictionary.service.words.model.Word;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,6 +19,7 @@ import reactor.core.publisher.Mono;
 public class PersistentUserWordsRepository implements UserWordsRepository {
 
     private final ReactiveMongoUserWordsRepository repository;
+    private final ReactiveMongoTemplate reactiveMongoTemplate;
 
     @Override
     public Mono<Void> deleteAllUserWords(String userId, SupportedLanguage language) {
@@ -31,6 +36,22 @@ public class PersistentUserWordsRepository implements UserWordsRepository {
         return repository.save(new WordDocument(null, userId, language.getLanguageCode(),
                                                 unsavedWord.wordText(), null, unsavedWord.translation()))
                          .map(WordDocument::toModel);
+    }
+
+    @Override
+    public Mono<Word> editWord(String userId, SupportedLanguage language, Word updatedWord) {
+        var query = new Query().addCriteria(Criteria.where("id").is(updatedWord.id())
+                                                    .and("userId").is(userId));
+        var update = new Update().set("meaning", updatedWord.meaning())
+                                 .set("translation", updatedWord.translation())
+                                 .set("wordText", updatedWord.wordText());
+        return reactiveMongoTemplate.findAndModify(query,
+                                                   update,
+                                                   WordDocument.class)
+                                    .map(WordDocument::toModel)
+                                    .map(word -> word.withWordText(updatedWord.wordText())
+                                                     .withTranslation(updatedWord.translation())
+                                                     .withMeaning(updatedWord.meaning()));
     }
 
     @Override

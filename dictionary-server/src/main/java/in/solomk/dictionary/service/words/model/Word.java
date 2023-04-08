@@ -1,8 +1,10 @@
 package in.solomk.dictionary.service.words.model;
 
+import lombok.With;
+
 public record Word(String id,
-                   String wordText,
-                   String meaning,
-                   String translation
+                   @With String wordText,
+                   @With String meaning,
+                   @With String translation
 ) {
 }
