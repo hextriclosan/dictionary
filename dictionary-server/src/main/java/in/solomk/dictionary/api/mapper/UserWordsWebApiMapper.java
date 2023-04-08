@@ -10,7 +10,7 @@ import in.solomk.dictionary.service.words.model.Word;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface UserWordsWebApiMapper {
 
     UserWordsResponse toUserWordsResponse(UserWords userWordsDocument);
