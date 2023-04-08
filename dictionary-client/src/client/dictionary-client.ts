@@ -30,6 +30,14 @@ class DictionaryClient {
         return addedWord
     }
 
+    async updateWord(userLanguage: UserLanguage, word: Word): Promise<Word> {
+        const token = this.extractJwtToken();
+        const editedWord = await this.restClient.patch(`${this._dictionaryHost}/api/languages/${userLanguage.languageCode}/words/${word.id}`,
+            token, word)
+        console.log('Received response on editing the word', editedWord)
+        return editedWord
+    }
+
     async getWords(userLanguage: UserLanguage): Promise<UserWords> {
         const token = getToken();
         const url = `${this._dictionaryHost}/api/languages/${userLanguage.languageCode}/words`

@@ -69,6 +69,19 @@ export class RestClient {
         return data
     }
 
+    async patch(url: string, token?: string, body?: any) {
+        let headers = this.fillBearerHeader(token);
+        headers['Content-Type'] = 'application/json'
+        const response = await fetch(url, {
+            method: 'PATCH',
+            headers: headers,
+            body: JSON.stringify(body)
+        })
+        const data = await response.json()
+        console.log('Received response on patch', data)
+        return data
+    }
+
     async delete(url: string, token?: string) {
         let headers = this.fillBearerHeader(token);
         const response = await fetch(url, {
