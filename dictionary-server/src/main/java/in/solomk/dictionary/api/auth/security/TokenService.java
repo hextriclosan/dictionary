@@ -1,4 +1,4 @@
-package in.solomk.dictionary.api.security;
+package in.solomk.dictionary.api.auth.security;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;

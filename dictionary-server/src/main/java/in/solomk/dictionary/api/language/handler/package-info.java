@@ -1,4 +1,4 @@
 @NonNullApi
-package in.solomk.dictionary.api.handler.settings;
+package in.solomk.dictionary.api.language.handler;
 
 import org.springframework.lang.NonNullApi;

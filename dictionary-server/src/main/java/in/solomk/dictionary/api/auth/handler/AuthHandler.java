@@ -1,6 +1,6 @@
-package in.solomk.dictionary.api.handler;
+package in.solomk.dictionary.api.auth.handler;
 
-import in.solomk.dictionary.api.security.TokenService;
+import in.solomk.dictionary.api.auth.security.TokenService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;

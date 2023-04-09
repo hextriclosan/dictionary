@@ -1,6 +1,6 @@
 package in.solomk.dictionary.ft;
 
-import in.solomk.dictionary.api.security.TokenService;
+import in.solomk.dictionary.api.auth.security.TokenService;
 import in.solomk.dictionary.ft.client.ActuatorTestClient;
 import in.solomk.dictionary.ft.client.UserLanguagesTestClient;
 import in.solomk.dictionary.ft.client.UserWordsTestClient;

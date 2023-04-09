@@ -1,7 +1,7 @@
-package in.solomk.dictionary.api.handler.settings;
+package in.solomk.dictionary.api.settings.handler;
 
-import in.solomk.dictionary.api.dto.settings.LanguageSettingsResponse;
-import in.solomk.dictionary.api.dto.settings.SupportedLanguageResponse;
+import in.solomk.dictionary.api.settings.dto.LanguageSettingsResponse;
+import in.solomk.dictionary.api.settings.dto.SupportedLanguageResponse;
 import in.solomk.dictionary.api.word.dto.UserWordsResponse;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import in.solomk.dictionary.service.settings.LanguageSettingsService;

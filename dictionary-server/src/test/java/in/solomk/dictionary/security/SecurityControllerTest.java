@@ -1,17 +1,10 @@
 package in.solomk.dictionary.security;
 
 import in.solomk.dictionary.api.RouteConfiguration;
-import in.solomk.dictionary.api.handler.AuthHandler;
-import in.solomk.dictionary.api.handler.language.AddLanguageHandler;
-import in.solomk.dictionary.api.handler.language.DeleteLanguageHandler;
-import in.solomk.dictionary.api.handler.language.GetLanguagesHandler;
-import in.solomk.dictionary.api.handler.profile.ProfileHandler;
-import in.solomk.dictionary.api.handler.settings.GetLanguageSettingsHandler;
-import in.solomk.dictionary.api.security.TokenService;
-import in.solomk.dictionary.api.word.handler.AddWordHandler;
-import in.solomk.dictionary.api.word.handler.DeleteWordHandler;
-import in.solomk.dictionary.api.word.handler.EditWordHandler;
-import in.solomk.dictionary.api.word.handler.GetWordsHandler;
+import in.solomk.dictionary.api.auth.handler.AuthHandler;
+import in.solomk.dictionary.api.auth.security.TokenService;
+import in.solomk.dictionary.api.profile.ProfileRouteConfiguration;
+import in.solomk.dictionary.api.profile.handler.ProfileHandler;
 import in.solomk.dictionary.config.SecurityConfiguration;
 import in.solomk.dictionary.service.profile.UserProfileService;
 import org.junit.jupiter.api.Test;
@@ -26,21 +19,17 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 
 @WebFluxTest
 @Import({RouteConfiguration.class,
+        ProfileRouteConfiguration.class,
         SecurityConfiguration.class,
         TokenService.class,
         ProfileHandler.class,
         AuthHandler.class})
 @MockBeans({
         @MockBean(UserProfileService.class),
-        @MockBean(GetWordsHandler.class),
-        @MockBean(AddWordHandler.class),
-        @MockBean(GetLanguagesHandler.class),
-        @MockBean(AddLanguageHandler.class),
-        @MockBean(DeleteLanguageHandler.class),
-        @MockBean(GetLanguageSettingsHandler.class),
-        @MockBean(DeleteWordHandler.class),
-        @MockBean(EditWordHandler.class),
-        @MockBean(name = "wordsGroupRoute", classes = RouterFunction.class)
+        @MockBean(name = "settingsRoute", classes = RouterFunction.class),
+        @MockBean(name = "languagesRoute", classes = RouterFunction.class),
+        @MockBean(name = "wordsRoute", classes = RouterFunction.class),
+        @MockBean(name = "wordsGroupRoute", classes = RouterFunction.class),
 })
 @ActiveProfiles("test")
 public class SecurityControllerTest {

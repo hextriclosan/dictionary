@@ -1,4 +1,4 @@
 @NonNullApi
-package in.solomk.dictionary.api.handler;
+package in.solomk.dictionary.api.auth.handler;
 
 import org.springframework.lang.NonNullApi;

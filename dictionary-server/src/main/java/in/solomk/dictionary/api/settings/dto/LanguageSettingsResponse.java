@@ -1,4 +1,4 @@
-package in.solomk.dictionary.api.dto.settings;
+package in.solomk.dictionary.api.settings.dto;
 
 import java.util.List;
 

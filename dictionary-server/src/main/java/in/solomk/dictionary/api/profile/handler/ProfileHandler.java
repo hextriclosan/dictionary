@@ -1,4 +1,4 @@
-package in.solomk.dictionary.api.handler.profile;
+package in.solomk.dictionary.api.profile.handler;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;

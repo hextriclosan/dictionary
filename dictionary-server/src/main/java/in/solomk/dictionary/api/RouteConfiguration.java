@@ -1,14 +1,5 @@
 package in.solomk.dictionary.api;
 
-import in.solomk.dictionary.api.handler.language.AddLanguageHandler;
-import in.solomk.dictionary.api.handler.language.DeleteLanguageHandler;
-import in.solomk.dictionary.api.handler.language.GetLanguagesHandler;
-import in.solomk.dictionary.api.handler.profile.ProfileHandler;
-import in.solomk.dictionary.api.handler.settings.GetLanguageSettingsHandler;
-import in.solomk.dictionary.api.word.handler.AddWordHandler;
-import in.solomk.dictionary.api.word.handler.DeleteWordHandler;
-import in.solomk.dictionary.api.word.handler.EditWordHandler;
-import in.solomk.dictionary.api.word.handler.GetWordsHandler;
 import in.solomk.dictionary.exception.AlreadyExistingException;
 import in.solomk.dictionary.exception.BadRequestException;
 import in.solomk.dictionary.exception.DictionaryException;
@@ -44,28 +35,19 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 public class RouteConfiguration {
 
     @Bean
-    RouterFunction<ServerResponse> routerFunction(GetWordsHandler getWordsHandler,
-                                                  AddWordHandler addWordHandler,
-                                                  EditWordHandler editWordHandler,
-                                                  DeleteWordHandler deleteWordHandler,
-                                                  ProfileHandler profileHandler,
-                                                  GetLanguagesHandler getLanguagesHandler,
-                                                  AddLanguageHandler addLanguageHandler,
-                                                  DeleteLanguageHandler deleteLanguageHandler,
-                                                  GetLanguageSettingsHandler getLanguageSettingsHandler,
-                                                  RouterFunction<ServerResponse> wordsGroupRoute) {
+    RouterFunction<ServerResponse> routerFunction(
+            RouterFunction<ServerResponse> profileRoute,
+            RouterFunction<ServerResponse> settingsRoute,
+            RouterFunction<ServerResponse> languagesRoute,
+            RouterFunction<ServerResponse> wordsRoute,
+            RouterFunction<ServerResponse> wordsGroupRoute) {
         HandlerFunction<ServerResponse> indexPage = (req) -> ServerResponse.ok().bodyValue(new ClassPathResource("public/index.html"));
         return RouterFunctions.route()
-                              .GET("/api/settings/languages", getLanguageSettingsHandler)
-                              .GET("/api/languages", getLanguagesHandler)
-                              .PUT("/api/languages/{languageCode}", addLanguageHandler)
-                              .DELETE("/api/languages/{languageCode}", deleteLanguageHandler)
-                              .GET("/api/languages/{languageCode}/words", getWordsHandler)
-                              .POST("/api/languages/{languageCode}/words", addWordHandler)
-                              .PATCH("/api/languages/{languageCode}/words/{wordId}", editWordHandler)
-                              .DELETE("/api/languages/{languageCode}/words/{wordId}", deleteWordHandler)
+                              .nest(path("/api/settings"), () -> settingsRoute)
+                              .nest(path("/api/languages"), () -> languagesRoute)
+                              .nest(path("/api/languages/{languageCode}/words"), () -> wordsRoute)
                               .nest(path("/api/languages/{languageCode}/groups"), () -> wordsGroupRoute)
-                              .GET("/api/me", profileHandler)
+                              .nest(path("/api/me"), () -> profileRoute)
                               .resources("/**", new ClassPathResource("/public/"))
                               .GET("/**", indexPage)
                               .build();

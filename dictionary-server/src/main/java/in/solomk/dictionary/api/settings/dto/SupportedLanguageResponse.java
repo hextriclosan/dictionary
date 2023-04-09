@@ -1,4 +1,4 @@
-package in.solomk.dictionary.api.dto.settings;
+package in.solomk.dictionary.api.settings.dto;
 
 public record SupportedLanguageResponse(String languageCode, String languageName) {
 }
