@@ -1,8 +1,8 @@
 package in.solomk.dictionary.api.group.handler;
 
-import in.solomk.dictionary.api.group.WordsGroupWebApiMapper;
 import in.solomk.dictionary.api.group.dto.EditWordsGroupRequest;
 import in.solomk.dictionary.api.group.dto.WordsGroupResponse;
+import in.solomk.dictionary.api.group.mapper.WordsGroupWebApiMapper;
 import in.solomk.dictionary.service.group.WordsGroupService;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import in.solomk.dictionary.service.language.UserLanguagesService;

@@ -2,7 +2,7 @@ package in.solomk.dictionary.ft;
 
 import in.solomk.dictionary.api.dto.language.LearningLanguageResponse;
 import in.solomk.dictionary.api.dto.language.LearningLanguagesAggregatedResponse;
-import in.solomk.dictionary.api.dto.words.CreateWordRequest;
+import in.solomk.dictionary.api.word.dto.CreateWordRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

@@ -1,8 +1,8 @@
 package in.solomk.dictionary.api.handler.language;
 
 import in.solomk.dictionary.api.dto.language.LearningLanguagesAggregatedResponse;
-import in.solomk.dictionary.api.dto.words.WordResponse;
 import in.solomk.dictionary.api.mapper.LearningLanguagesWebApiMapper;
+import in.solomk.dictionary.api.word.dto.WordResponse;
 import in.solomk.dictionary.service.language.UserLanguagesService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

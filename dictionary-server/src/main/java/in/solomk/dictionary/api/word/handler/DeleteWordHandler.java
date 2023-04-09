@@ -1,7 +1,7 @@
-package in.solomk.dictionary.api.handler.words;
+package in.solomk.dictionary.api.word.handler;
 
-import in.solomk.dictionary.api.dto.words.WordResponse;
-import in.solomk.dictionary.api.mapper.UserWordsWebApiMapper;
+import in.solomk.dictionary.api.word.dto.WordResponse;
+import in.solomk.dictionary.api.word.mapper.UserWordsWebApiMapper;
 import in.solomk.dictionary.exception.BadRequestException;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import in.solomk.dictionary.service.words.UsersWordsService;

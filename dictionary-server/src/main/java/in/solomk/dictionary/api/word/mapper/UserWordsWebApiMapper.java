@@ -1,9 +1,9 @@
-package in.solomk.dictionary.api.mapper;
+package in.solomk.dictionary.api.word.mapper;
 
-import in.solomk.dictionary.api.dto.words.CreateWordRequest;
-import in.solomk.dictionary.api.dto.words.EditWordRequest;
-import in.solomk.dictionary.api.dto.words.UserWordsResponse;
-import in.solomk.dictionary.api.dto.words.WordResponse;
+import in.solomk.dictionary.api.word.dto.CreateWordRequest;
+import in.solomk.dictionary.api.word.dto.EditWordRequest;
+import in.solomk.dictionary.api.word.dto.UserWordsResponse;
+import in.solomk.dictionary.api.word.dto.WordResponse;
 import in.solomk.dictionary.service.words.model.UnsavedWord;
 import in.solomk.dictionary.service.words.model.UserWords;
 import in.solomk.dictionary.service.words.model.Word;

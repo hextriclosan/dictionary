@@ -1,6 +1,6 @@
 package in.solomk.dictionary.api.group.handler;
 
-import in.solomk.dictionary.api.group.WordsGroupWebApiMapper;
+import in.solomk.dictionary.api.group.mapper.WordsGroupWebApiMapper;
 import in.solomk.dictionary.exception.BadRequestException;
 import in.solomk.dictionary.service.group.WordsGroupService;
 import in.solomk.dictionary.service.group.model.WordsGroup;

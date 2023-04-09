@@ -1,4 +1,4 @@
-package in.solomk.dictionary.api.group;
+package in.solomk.dictionary.api.group.mapper;
 
 import in.solomk.dictionary.api.group.dto.AllWordGroupsResponse;
 import in.solomk.dictionary.api.group.dto.CreateWordsGroupRequest;

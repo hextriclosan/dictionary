@@ -1,4 +1,4 @@
-package in.solomk.dictionary.api.dto.words;
+package in.solomk.dictionary.api.word.dto;
 
 public record WordResponse(
         String id,

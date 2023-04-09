@@ -1,8 +1,8 @@
 package in.solomk.dictionary.api.handler.language;
 
 import in.solomk.dictionary.api.dto.language.LearningLanguagesAggregatedResponse;
-import in.solomk.dictionary.api.dto.words.WordResponse;
 import in.solomk.dictionary.api.mapper.LearningLanguagesWebApiMapper;
+import in.solomk.dictionary.api.word.dto.WordResponse;
 import in.solomk.dictionary.exception.BadRequestException;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import in.solomk.dictionary.service.language.UserLanguagesService;
