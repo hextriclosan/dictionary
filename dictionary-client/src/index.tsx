@@ -13,6 +13,7 @@ import RequireAuth from "./components/auth/require-auth";
 import {AuthProvider} from "./components/auth/authentication-helpers";
 import {UserLanguagesComponent} from "./components/languages/UserLanguagesComponent";
 import {CurrentLanguageProvider} from "./context/CurrentLanguageContext";
+import {WordGroupsComponent} from "./components/groups/WordGroupsComponent";
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
@@ -33,6 +34,11 @@ root.render(
                             <Route path="/words" element={
                                 <RequireAuth>
                                     <WordsComponent/>
+                                </RequireAuth>
+                            }/>
+                            <Route path="/groups" element={
+                                <RequireAuth>
+                                    <WordGroupsComponent/>
                                 </RequireAuth>
                             }/>
                             <Route path="/languages" element={
