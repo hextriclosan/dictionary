@@ -34,11 +34,11 @@ public class EditWordHandler implements HandlerFunction<ServerResponse> {
                       .map(Principal::getName)
                       .flatMap(userId -> ServerResponse.ok()
                                                        .contentType(APPLICATION_JSON)
-                                                       .body(addAndValidateStudiedLanguage(request, userId),
+                                                       .body(editAndValidateStudiedLanguage(request, userId),
                                                              WordResponse.class));
     }
 
-    private Mono<WordResponse> addAndValidateStudiedLanguage(ServerRequest request, String userId) {
+    private Mono<WordResponse> editAndValidateStudiedLanguage(ServerRequest request, String userId) {
         var supportedLanguage = extractLanguageCode(request);
         return userLanguagesService.validateLanguageIsStudied(userId, supportedLanguage)
                                    .then(editWord(request, userId));
@@ -46,9 +46,10 @@ public class EditWordHandler implements HandlerFunction<ServerResponse> {
 
     private Mono<WordResponse> editWord(ServerRequest request, String userId) {
         return extractRequestBody(request)
-                .flatMap(editWordRequest -> usersWordsService.editWord(userId,
-                                                                       extractLanguageCode(request),
-                                                                       mapper.toWord(extractWordId(request), editWordRequest)))
+                .flatMap(editWordRequest -> usersWordsService
+                        .editWord(userId,
+                                  extractLanguageCode(request),
+                                  mapper.toWord(extractWordId(request), editWordRequest)))
                 .map(mapper::toWordResponse);
     }
 

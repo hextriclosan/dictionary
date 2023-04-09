@@ -37,6 +37,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.springframework.web.reactive.function.server.RequestPredicates.path;
+
 @Slf4j
 @Configuration
 public class RouteConfiguration {
@@ -50,7 +52,8 @@ public class RouteConfiguration {
                                                   GetLanguagesHandler getLanguagesHandler,
                                                   AddLanguageHandler addLanguageHandler,
                                                   DeleteLanguageHandler deleteLanguageHandler,
-                                                  GetLanguageSettingsHandler getLanguageSettingsHandler) {
+                                                  GetLanguageSettingsHandler getLanguageSettingsHandler,
+                                                  RouterFunction<ServerResponse> wordsGroupRoute) {
         HandlerFunction<ServerResponse> indexPage = (req) -> ServerResponse.ok().bodyValue(new ClassPathResource("public/index.html"));
         return RouterFunctions.route()
                               .GET("/api/settings/languages", getLanguageSettingsHandler)
@@ -61,6 +64,7 @@ public class RouteConfiguration {
                               .POST("/api/languages/{languageCode}/words", addWordHandler)
                               .PATCH("/api/languages/{languageCode}/words/{wordId}", editWordHandler)
                               .DELETE("/api/languages/{languageCode}/words/{wordId}", deleteWordHandler)
+                              .nest(path("/api/languages/{languageCode}/groups"), () -> wordsGroupRoute)
                               .GET("/api/me", profileHandler)
                               .resources("/**", new ClassPathResource("/public/"))
                               .GET("/**", indexPage)

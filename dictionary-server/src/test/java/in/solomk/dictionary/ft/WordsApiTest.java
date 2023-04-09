@@ -14,6 +14,7 @@ import static in.solomk.dictionary.service.language.SupportedLanguage.UKRAINIAN;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SuppressWarnings("DataFlowIssue")
 public class WordsApiTest extends BaseFuncTest {
 
     @Test
@@ -31,7 +32,6 @@ public class WordsApiTest extends BaseFuncTest {
                                                        .returnResult()
                                                        .getResponseBody();
 
-        assertThat(wordResponse).isNotNull();
         assertThat(wordResponse)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
@@ -113,8 +113,9 @@ public class WordsApiTest extends BaseFuncTest {
         verifyUserWordsResponse(ENGLISH, new UserWordsResponse(List.of(wordResponse1, wordResponse2)));
 
         userWordsTestClient.deleteWord(userToken, ENGLISH.getLanguageCode(), wordResponse1.id())
-                           .expectStatus()
-                           .isOk();
+                           .expectStatus().isOk()
+                           .expectBody(UserWordsResponse.class)
+                           .isEqualTo(new UserWordsResponse(List.of(wordResponse2)));
         verifyUserWordsResponse(ENGLISH, new UserWordsResponse(List.of(wordResponse2)));
 
         userWordsTestClient.deleteWord(userToken, ENGLISH.getLanguageCode(), wordResponse2.id())
@@ -163,7 +164,6 @@ public class WordsApiTest extends BaseFuncTest {
                                                              .returnResult()
                                                              .getResponseBody();
 
-        assertThat(editedWordResponse).isNotNull();
         assertThat(editedWordResponse)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
