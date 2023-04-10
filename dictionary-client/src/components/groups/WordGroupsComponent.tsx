@@ -2,7 +2,7 @@ import {useGroupsClient} from "../../client/groups/groups-client";
 import useCurrentLanguage from "../../context/CurrentLanguageContext";
 import React, {useEffect, useState} from "react";
 import {WordsGroup} from "../../client/groups/words-group";
-import {UnsavedWordsGroup} from "../../client/groups/unsaved-words-group";
+import {AddGroupComponent} from "./AddGroupComponent";
 
 export function WordGroupsComponent() {
     const groupsClient = useGroupsClient();
@@ -10,11 +10,10 @@ export function WordGroupsComponent() {
     const currentLanguage = currentLanguageContext.currentLanguage;
 
     const [groups, setGroups] = useState<WordsGroup[]>([]);
-    const [editingGroupId, setEditingGroupId] = useState<string>('');
-    const [newGroupName, setNewGroupName] = useState<string>('');
-    const [showAddGroup, setShowAddGroup] = useState<boolean>(false);
+    const [editingGroupId, setEditingGroupId] = useState<string>("");
+    const [newGroupName, setNewGroupName] = useState<string>("");
 
-    const handleDeleteGroup = async (group: WordsGroup) => {
+    async function handleDeleteGroup(group: WordsGroup) {
         if (!currentLanguage) return;
         try {
             await groupsClient.deleteGroup(currentLanguage, group);
@@ -22,19 +21,19 @@ export function WordGroupsComponent() {
         } catch (error) {
             console.error(`Error deleting group with id ${group.id}:`, error);
         }
-    };
+    }
 
-    const handleStartEditGroup = (group: WordsGroup) => {
+    function handleStartEditGroup(group: WordsGroup) {
         setEditingGroupId(group.id);
         setNewGroupName(group.name);
-    };
+    }
 
-    const handleCancelEditGroup = () => {
-        setEditingGroupId('');
-        setNewGroupName('');
-    };
+    function handleCancelEditGroup() {
+        setEditingGroupId("");
+        setNewGroupName("");
+    }
 
-    const handleSaveGroup = async (group: WordsGroup) => {
+    async function handleSaveGroup(group: WordsGroup) {
         if (!newGroupName || !currentLanguage) {
             return;
         }
@@ -48,18 +47,20 @@ export function WordGroupsComponent() {
                 }
                 return g;
             }));
-            setEditingGroupId('');
-            setNewGroupName('');
+            setEditingGroupId("");
+            setNewGroupName("");
         } catch (error) {
             console.error(`Error updating group with id ${group.id}:`, error);
         }
-    };
+    }
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
         setNewGroupName(event.target.value);
-    };
+    }
 
-    const isEditingGroup = (groupId: string) => editingGroupId === groupId;
+    function isEditingGroup(groupId: string) {
+        return editingGroupId === groupId;
+    }
 
     useEffect(() => {
         if (!currentLanguage) return;
@@ -69,45 +70,10 @@ export function WordGroupsComponent() {
             });
     }, [currentLanguage, groupsClient]);
 
-    const handleAddGroup = async () => {
-        if (!currentLanguage || !newGroupName) {
-            return;
-        }
-
-        try {
-            const newGroup: UnsavedWordsGroup = {name: newGroupName};
-            const createdGroup = await groupsClient.createGroup(currentLanguage, newGroup);
-            setGroups(prevGroups => [...prevGroups, createdGroup]);
-            setShowAddGroup(false);
-            setNewGroupName('');
-        } catch (error) {
-            console.error(`Error creating new group:`, error);
-        }
-    };
-
-    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            handleAddGroup();
-        } else if (event.key === 'Escape') {
-            setShowAddGroup(false);
-            setNewGroupName('');
-        }
-    };
-
     return (
         <div>
             <h1>Word Groups</h1>
-            <div>
-                <button onClick={() => setShowAddGroup(true)}>Add new group</button>
-                {showAddGroup && (
-                    <>
-                        <input type="text" value={newGroupName} onChange={handleInputChange}
-                               onKeyPress={handleKeyPress}/>
-                        <button onClick={handleAddGroup}>Save</button>
-                        <button onClick={() => setShowAddGroup(false)}>Cancel</button>
-                    </>
-                )}
-            </div>
+            <AddGroupComponent onGroupAdded={createdGroup => setGroups([...groups, createdGroup])}/>
             <div>
                 {groups.map(group => (
                     <div key={group.id}>

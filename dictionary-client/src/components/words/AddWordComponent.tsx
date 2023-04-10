@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useDictionaryClient} from "../../client/dictionary-client";
 import {UnsavedWord} from "../../client/model/unsaved-word";
 import useCurrentLanguage from "../../context/CurrentLanguageContext";
