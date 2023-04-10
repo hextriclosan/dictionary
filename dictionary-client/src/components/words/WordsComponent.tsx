@@ -32,9 +32,16 @@ function WordsComponent() {
         setWords(userWords.words);
     }
 
-    async function updateWord(word: Word, field: keyof Word, newValue: string) {
+    function updateWord(word: Word, field: keyof Word, newValue: string) {
         const updatedWord = {...word, [field]: newValue};
-        const updated = await dictionaryClient.updateWord(currentLanguage!, updatedWord);
+        setEditedWords((prevEditedWords) => ({...prevEditedWords, [word.id]: updatedWord}));
+    }
+
+    async function saveWord(word: Word) {
+        if (!isWordEdited(word)) {
+            cancelEditWord(word);
+        }
+        const updated = await dictionaryClient.updateWord(currentLanguage!, word);
         setWords((prevWords) => prevWords.map((w) => (w.id === updated.id ? updated : w)));
         setEditedWords((prevEditedWords) => {
             const {[word.id]: removed, ...rest} = prevEditedWords;
@@ -47,13 +54,22 @@ function WordsComponent() {
     }
 
     function isWordEdited(word: Word) {
-        return editedWords[word.id] && editedWords[word.id].wordText !== word.wordText;
+        return editedWords[word.id] &&
+            (editedWords[word.id].wordText !== word.wordText ||
+                editedWords[word.id].translation !== word.translation);
+    }
+
+    function cancelEditWord(word: Word) {
+        return () => setEditedWords((prevEditedWords) => {
+            const {[word.id]: removed, ...rest} = prevEditedWords;
+            return rest;
+        });
     }
 
     return (
         <div>
-            <AddWordComponent onWordAdded={(word) => setWords([...words, word])}/>
             <h1>Words</h1>
+            <AddWordComponent onWordAdded={(word) => setWords([...words, word])}/>
             {words.map((word) => (
                 <li key={word.id}>
                     {editedWords[word.id] ? (
@@ -69,13 +85,12 @@ function WordsComponent() {
                                 value={editedWords[word.id].translation}
                                 onChange={(event) => updateWord(word, "translation", event.target.value)}
                             />
-                            <button onClick={() => setEditedWords((prevEditedWords) => {
-                                const {[word.id]: removed, ...rest} = prevEditedWords;
-                                return rest;
-                            })}>Cancel
+                            <button onClick={cancelEditWord(word)}>
+                                Cancel
                             </button>
                             <button disabled={!isWordEdited(word)}
-                                    onClick={() => updateWord(editedWords[word.id], "wordText", editedWords[word.id].wordText)}>Save
+                                    onClick={() => saveWord(editedWords[word.id])}>
+                                Save
                             </button>
                         </>
                     ) : (

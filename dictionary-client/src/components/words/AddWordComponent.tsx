@@ -51,9 +51,9 @@ function AddWordComponent(props: AddWordComponentProps) {
     return (
         <>
             {showAddWordInput ? (
-                <div className="add-word-input-container">
+                <div>
                     <h1>Add word:</h1>
-                    <div className="add-word-input">
+                    <div>
                         <label htmlFor="word">Word:</label>
                         <input
                             type="text"
@@ -62,7 +62,7 @@ function AddWordComponent(props: AddWordComponentProps) {
                             onKeyDown={handleKeyDown}
                         />
                     </div>
-                    <div className="add-word-input">
+                    <div>
                         <label htmlFor="translation">Translation:</label>
                         <input
                             type="text"
@@ -71,7 +71,7 @@ function AddWordComponent(props: AddWordComponentProps) {
                             onKeyDown={handleKeyDown}
                         />
                     </div>
-                    <div className="add-word-buttons">
+                    <div>
                         <button onClick={onAddWord}>Add word</button>
                         <button onClick={() => setShowAddWordInput(false)}>Cancel</button>
                     </div>
