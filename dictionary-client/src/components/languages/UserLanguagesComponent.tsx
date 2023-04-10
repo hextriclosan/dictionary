@@ -5,6 +5,7 @@ import {UserLanguage} from "../../client/languages/user-language";
 import {useLanguagesClient} from "../../client/languages/languages-client";
 import {LanguageSelectorComponent} from "./LanguageSelectorComponent";
 import useCurrentLanguage from "../../context/CurrentLanguageContext";
+import * as Icon from 'react-bootstrap-icons';
 
 export function UserLanguagesComponent() {
     const settingsClient = useSettingsDictionaryClient();
@@ -45,7 +46,7 @@ export function UserLanguagesComponent() {
                     <li key={userLanguage.languageCode}>
                         <span>{userLanguage.languageName}</span>
                         <button onClick={() => removeLanguage(userLanguage)}>
-                            x
+                            <Icon.Trash/>
                         </button>
                     </li>
                 ))}

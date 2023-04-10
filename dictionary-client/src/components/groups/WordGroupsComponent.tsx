@@ -3,6 +3,7 @@ import useCurrentLanguage from "../../context/CurrentLanguageContext";
 import React, {useEffect, useState} from "react";
 import {WordsGroup} from "../../client/groups/words-group";
 import {AddGroupComponent} from "./AddGroupComponent";
+import * as Icon from 'react-bootstrap-icons';
 
 export function WordGroupsComponent() {
     const groupsClient = useGroupsClient();
@@ -86,8 +87,8 @@ export function WordGroupsComponent() {
                         ) : (
                             <>
                                 <span>{group.name}</span>
-                                <button onClick={() => handleStartEditGroup(group)}>Edit</button>
-                                <button onClick={() => handleDeleteGroup(group)}>Delete</button>
+                                <button onClick={() => handleStartEditGroup(group)}><Icon.Pencil/></button>
+                                <button onClick={() => handleDeleteGroup(group)}><Icon.Trash/></button>
                             </>
                         )}
                     </div>
