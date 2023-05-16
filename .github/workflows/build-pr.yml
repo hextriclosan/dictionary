@@ -41,7 +41,7 @@ jobs:
           ./gradlew build
 
       - name: Upload test coverage to Codecov
-        uses: codecov/codecov-action@v3.1.1
+        uses: codecov/codecov-action@v3.1.4
         with:
           directory: ./dictionary-server/build/reports/jacoco/test
 
