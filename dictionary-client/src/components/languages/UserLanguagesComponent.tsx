@@ -1,4 +1,4 @@
-import {useSettingsDictionaryClient} from "../../client/settings/settings-client";
+import {settingsDictionaryClient} from "../../client/settings/settings-client";
 import {useEffect, useState} from "react";
 import {SupportedLanguage} from "../../client/settings/supported-language";
 import {UserLanguage} from "../../client/languages/user-language";
@@ -8,7 +8,6 @@ import useCurrentLanguage from "../../context/CurrentLanguageContext";
 import * as Icon from 'react-bootstrap-icons';
 
 export function UserLanguagesComponent() {
-    const settingsClient = useSettingsDictionaryClient();
     const languagesClient = useLanguagesClient();
     const currentLanguageContext = useCurrentLanguage();
 
@@ -16,9 +15,9 @@ export function UserLanguagesComponent() {
     const [languageSelectorHidden, setLanguageSelectorHidden] = useState(true)
 
     useEffect(() => {
-        settingsClient.getSupportedLanguages()
+        settingsDictionaryClient.getSupportedLanguages()
             .then(supportedLanguages => setSupportedLanguages(supportedLanguages.supportedLanguages))
-    }, [settingsClient]);
+    }, []);
 
     async function removeLanguage(userLanguage: UserLanguage) {
         const aggregatedUserLanguages = await languagesClient.removeLanguage(userLanguage.languageCode)
@@ -51,18 +50,22 @@ export function UserLanguagesComponent() {
                     </li>
                 ))}
             </ul>
-            {currentLanguageContext.allUserLanguages.length === 0 && <div>You don't have any languages configured</div>}
-            {languageSelectorHidden && <button onClick={() => setLanguageSelectorHidden(!languageSelectorHidden)}>
-                Add Language
-            </button>}
-            {!languageSelectorHidden && <button onClick={() => setLanguageSelectorHidden(!languageSelectorHidden)}>
-                Cancel adding new language
-            </button>}
-            {!languageSelectorHidden &&
-                <LanguageSelectorComponent
-                    languages={supportedLanguages}
-                    onSelected={(selectedLanguage) => addLanguage(selectedLanguage)}/>
-            }
+            {!currentLanguageContext.allUserLanguages.length && <div>You don't have any languages configured</div>}
+            {languageSelectorHidden ? (
+                <button onClick={() => setLanguageSelectorHidden(!languageSelectorHidden)}>
+                    Add Language
+                </button>
+            ) : (
+                <>
+                    <button onClick={() => setLanguageSelectorHidden(!languageSelectorHidden)}>
+                        Cancel adding new language
+                    </button>
+                    <LanguageSelectorComponent
+                        languages={supportedLanguages}
+                        onSelected={(selectedLanguage) => addLanguage(selectedLanguage)}
+                    />
+                </>
+            )}
         </>
     )
 }

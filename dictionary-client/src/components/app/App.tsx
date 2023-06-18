@@ -2,6 +2,7 @@ import {Link, Outlet} from "react-router-dom";
 import {useNavigate} from "react-router";
 import useAuth from "../auth/authentication-helpers";
 import {CurrentLanguageSelectionComponent} from "../languages/CurrentLanguageSelectionComponent";
+import routing from "../../constants/routing";
 
 function App() {
     const navigate = useNavigate();
@@ -15,9 +16,9 @@ function App() {
                     borderBottom: "solid 1px",
                     paddingBottom: "1rem",
                 }}>
-                    <Link to="/">Home</Link> | {" "}
+                    <Link to={routing.HOME}>Home</Link> | {" "}
                     <Link to="/about">About</Link> | {" "}
-                    <Link to="/login">Login</Link>
+                    <Link to={routing.LOGIN}>Login</Link>
                 </nav>
                 <Outlet/>
             </div>
@@ -31,7 +32,7 @@ function App() {
                 borderBottom: "solid 1px",
                 paddingBottom: "1rem",
             }}>
-                <Link to="/">Home</Link> | {" "}
+                <Link to={routing.HOME}>Home</Link> | {" "}
                 <Link to="/words">Words</Link> | {" "}
                 <Link to="/groups">Groups</Link> | {" "}
                 <Link to="/languages">Languages</Link> | {" "}

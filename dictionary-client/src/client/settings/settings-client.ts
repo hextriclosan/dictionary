@@ -1,11 +1,6 @@
 import {RestClient} from "../rest-client";
 import {getToken} from "../../components/auth/authentication-helpers";
-import {useMemo} from "react";
 import {SupportedLanguagesSettings} from "./supported-languages-settings";
-
-export function useSettingsDictionaryClient(): SettingsDictionaryClient {
-    return useMemo(() => new SettingsDictionaryClient(new RestClient()), [])
-}
 
 class SettingsDictionaryClient {
     private restClient: RestClient;
@@ -21,3 +16,5 @@ class SettingsDictionaryClient {
         return supportedLanguages;
     }
 }
+
+export const settingsDictionaryClient = new SettingsDictionaryClient(new RestClient());

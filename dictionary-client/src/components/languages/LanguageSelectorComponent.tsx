@@ -20,8 +20,13 @@ export function LanguageSelectorComponent(props: LanguageListComponentProps) {
             }>
                 <option value="">--Please choose an option--</option>
                 {props.languages.map((item) => (
-                    <option key={item.languageCode} value={item.languageCode}
-                            onClick={() => props.onSelected(item)}>{item.languageName}</option>
+                    <option
+                        key={item.languageCode}
+                        value={item.languageCode}
+                        onClick={() => props.onSelected(item)}
+                    >
+                        {item.languageName}
+                    </option>
                 ))}
             </select>
 

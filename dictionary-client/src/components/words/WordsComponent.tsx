@@ -4,6 +4,9 @@ import {useDictionaryClient} from "../../client/dictionary-client";
 import useCurrentLanguage from "../../context/CurrentLanguageContext";
 import AddWordComponent from "./AddWordComponent";
 import * as Icon from 'react-bootstrap-icons';
+import {Button, Space, Table} from "antd";
+import {DeleteOutlined, EditOutlined} from '@ant-design/icons';
+import {ColumnsType} from "antd/es/table";
 
 function WordsComponent() {
     const [words, setWords] = useState<Word[]>([]);
@@ -14,9 +17,10 @@ function WordsComponent() {
 
     useEffect(() => {
         if (!currentLanguage) return;
-        dictionaryClient.getWords(currentLanguage).then((userWords) => {
-            setWords(userWords.words);
-        });
+        dictionaryClient.getWords(currentLanguage)
+            .then((userWords) => {
+                setWords(userWords.words);
+            });
     }, [currentLanguage, dictionaryClient]);
 
     if (!currentLanguage) {

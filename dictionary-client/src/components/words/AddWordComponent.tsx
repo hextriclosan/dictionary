@@ -48,39 +48,38 @@ function AddWordComponent(props: AddWordComponentProps) {
             window.removeEventListener("keydown", handleEscapeKey);
         };
     }, []);
-    return (
-        <>
-            {showAddWordInput ? (
-                <div>
-                    <h1>Add word:</h1>
-                    <div>
-                        <label htmlFor="word">Word:</label>
-                        <input
-                            type="text"
-                            value={wordText}
-                            onChange={(event) => setWordText(event.target.value)}
-                            onKeyDown={handleKeyDown}
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="translation">Translation:</label>
-                        <input
-                            type="text"
-                            value={translation}
-                            onChange={(event) => setTranslation(event.target.value)}
-                            onKeyDown={handleKeyDown}
-                        />
-                    </div>
-                    <div>
-                        <button onClick={onAddWord}>Add word</button>
-                        <button onClick={() => setShowAddWordInput(false)}>Cancel</button>
-                    </div>
-                </div>
-            ) : (
-                <button onClick={() => setShowAddWordInput(true)}>Add word</button>
-            )}
-        </>
-    );
+
+    if (!showAddWordInput) {
+        return <button onClick={() => setShowAddWordInput(true)}>Add word</button>
+    }
+
+    return <div>
+        <h1>Add word:</h1>
+        <div>
+            <label htmlFor="word">Word:</label>
+            <input
+                id="word"
+                type="text"
+                value={wordText}
+                onChange={(event) => setWordText(event.target.value)}
+                onKeyDown={handleKeyDown}
+            />
+        </div>
+        <div>
+            <label htmlFor="translation">Translation:</label>
+            <input
+                id="translation"
+                type="text"
+                value={translation}
+                onChange={(event) => setTranslation(event.target.value)}
+                onKeyDown={handleKeyDown}
+            />
+        </div>
+        <div>
+            <button onClick={onAddWord}>Add word</button>
+            <button onClick={() => setShowAddWordInput(false)}>Cancel</button>
+        </div>
+    </div>
 }
 
 export default AddWordComponent;
