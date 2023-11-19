@@ -1,6 +1,13 @@
-# Getting Started with Create React App
+# Dictionary Web Client
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Development
+
+```bash
+npm install
+npm start
+```
+
+# Generated README
 
 ## Available Scripts
 
