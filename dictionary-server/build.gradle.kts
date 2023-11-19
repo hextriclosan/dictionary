@@ -22,7 +22,7 @@ scmVersion {
 
 group = "in.solomk"
 project.version = scmVersion.version
-java.sourceCompatibility = JavaVersion.VERSION_21
+java.sourceCompatibility = JavaVersion.VERSION_20
 
 configurations {
     compileOnly {
