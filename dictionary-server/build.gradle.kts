@@ -11,7 +11,7 @@ plugins {
     id("org.graalvm.buildtools.native") version "0.9.19"
      */
     id("pl.allegro.tech.build.axion-release") version "1.15.5"
-    id("io.freefair.lombok") version "6.6.1"
+    id("io.freefair.lombok") version "8.4"
 }
 
 scmVersion {
