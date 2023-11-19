@@ -4,7 +4,7 @@ plugins {
     java
     jacoco
     id("org.springframework.boot") version "3.1.5"
-    id("io.spring.dependency-management") version "1.1.0"
+    id("io.spring.dependency-management") version "1.1.4"
     /*
     temporary disabled due to absence of Mockito support and strange behavior of native build (Spring Security not working as with JVM)
     https://github.com/spring-projects/spring-boot/issues/32195
