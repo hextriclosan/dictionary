@@ -2,26 +2,68 @@
 GET {{dictionary-server-host}}/actuator
 Authorization: Basic admin secret
 
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
 ### Health
 GET {{dictionary-server-host}}/actuator/health
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
 
 ### Health with auth
 GET {{dictionary-server-host}}/actuator/health
 Authorization: Basic admin secret
 
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
 ### Info
 GET {{dictionary-server-host}}/actuator/info
 Authorization: Basic admin secret
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
 
 ### Env
 GET {{dictionary-server-host}}/actuator/env
 Authorization: Basic admin secret
 
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
 ### Beans
 GET {{dictionary-server-host}}/actuator/beans
 Authorization: Basic admin secret
 
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
 ### Config Props
 GET {{dictionary-server-host}}/actuator/configprops
 Authorization: Basic admin secret
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
 
