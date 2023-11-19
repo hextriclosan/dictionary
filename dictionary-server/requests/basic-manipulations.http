@@ -1,12 +1,14 @@
 ### Check root endpoint
 GET {{dictionary-server-host}}/
 
-### Get user words
-GET {{dictionary-server-host}}/api/words
-Authorization: Bearer {{auth_token}}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
 
 ### Add user word
-POST {{dictionary-server-host}}/api/words
+POST {{dictionary-server-host}}/api/languages/en/words
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
@@ -14,3 +16,34 @@ Content-Type: application/json
   "wordText": "test",
   "translation": "тест"
 }
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.global.set("created-word-id", response.body.id);
+%}
+
+### Get user words
+GET {{dictionary-server-host}}/api/languages/en/words
+Authorization: Bearer {{auth_token}}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.words.length > 0, "Response should contain words");
+    });
+%}
+
+
+### Delete use word
+DELETE {{dictionary-server-host}}/api/languages/en/words/{{created-word-id}}
+Authorization: Bearer {{auth_token}}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
