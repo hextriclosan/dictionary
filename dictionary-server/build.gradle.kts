@@ -16,7 +16,7 @@ plugins {
 
 scmVersion {
     repository {
-        directory.set(project.rootProject.file("../"))
+        directory.set(project.rootProject.file("../").toString())
     }
 }
 
