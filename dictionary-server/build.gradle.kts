@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 plugins {
     java
     jacoco
-    id("org.springframework.boot") version "3.0.2"
+    id("org.springframework.boot") version "3.1.5"
     id("io.spring.dependency-management") version "1.1.0"
     /*
     temporary disabled due to absence of Mockito support and strange behavior of native build (Spring Security not working as with JVM)
