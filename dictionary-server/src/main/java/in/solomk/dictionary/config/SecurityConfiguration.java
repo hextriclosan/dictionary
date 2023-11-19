@@ -18,6 +18,7 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.DelegatingReactiveAuthenticationManager;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
@@ -60,32 +61,19 @@ public class SecurityConfiguration {
         config.addAllowedOrigin("*");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
-        // @formatter:off
         return http
-                .csrf().disable()
-                       .cors(corsSpec -> corsSpec.configurationSource(request -> config))
-                       .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
-                .authorizeExchange()
-                    .pathMatchers("/api/**").authenticated()
-                    .pathMatchers("/actuator/health").permitAll()
-                    .pathMatchers("/actuator/**").hasRole("ACTUATOR")
-                    .pathMatchers("/**").permitAll()
-                    .and()
-                .httpBasic()
-                    .authenticationManager(httpBasicAuthenticationManager)
-                    .and()
-                .oauth2ResourceServer()
-                    .jwt()
-                        .and()
-                        .and()
-                .oauth2Login()
-                    .authenticationSuccessHandler(jwtServerAuthenticationSuccessHandler)
-                    .and()
-                .exceptionHandling()
-                    .authenticationEntryPoint(new HttpStatusServerEntryPoint(HttpStatus.UNAUTHORIZED))
-                    .and()
+                .csrf(csrfSpec -> csrfSpec.disable()
+                                          .cors(corsSpec -> corsSpec.configurationSource(request -> config))
+                                          .securityContextRepository(NoOpServerSecurityContextRepository.getInstance()))
+                .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec.pathMatchers("/api/**").authenticated()
+                                                                                 .pathMatchers("/actuator/health").permitAll()
+                                                                                 .pathMatchers("/actuator/**").hasRole("ACTUATOR")
+                                                                                 .pathMatchers("/**").permitAll())
+                .httpBasic(httpBasicSpec -> httpBasicSpec.authenticationManager(httpBasicAuthenticationManager))
+                .oauth2ResourceServer(oAuth2ResourceServerSpec -> oAuth2ResourceServerSpec.jwt(Customizer.withDefaults()))
+                .oauth2Login(oAuth2LoginSpec -> oAuth2LoginSpec.authenticationSuccessHandler(jwtServerAuthenticationSuccessHandler))
+                .exceptionHandling(exceptionHandlingSpec -> exceptionHandlingSpec.authenticationEntryPoint(new HttpStatusServerEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .build();
-        // @formatter:on
     }
 
     @Bean
@@ -110,10 +98,10 @@ public class SecurityConfiguration {
                                                               @Value("${security.user.password}") String password,
                                                               PasswordEncoder passwordEncoder) {
         return new MapReactiveUserDetailsService(User.builder()
-                                                         .username(username)
-                                                         .password(passwordEncoder.encode(password))
-                                                         .roles("ACTUATOR")
-                                                         .build());
+                                                     .username(username)
+                                                     .password(passwordEncoder.encode(password))
+                                                     .roles("ACTUATOR")
+                                                     .build());
     }
 
     @Bean
@@ -124,14 +112,14 @@ public class SecurityConfiguration {
 
         return (webFilterExchange, authentication) ->
                 userProfileService.getOrCreateUserProfileBySocialProviderId("google", authentication.getName()) // currently support only google
-                        .map(userProfile -> tokenService.generateToken(userProfile.id()))
-                        .doOnNext(token -> {
-                            log.debug("Generated JWT: {}", token);
-                            ServerHttpResponse response = webFilterExchange.getExchange().getResponse();
-                            response.setStatusCode(HttpStatus.FOUND);
-                            response.getHeaders().setLocation(URI.create(redirectWeb + "/authorized?jwt=" + token));
-                        })
-                        .then();
+                                  .map(userProfile -> tokenService.generateToken(userProfile.id()))
+                                  .doOnNext(token -> {
+                                      log.debug("Generated JWT: {}", token);
+                                      ServerHttpResponse response = webFilterExchange.getExchange().getResponse();
+                                      response.setStatusCode(HttpStatus.FOUND);
+                                      response.getHeaders().setLocation(URI.create(redirectWeb + "/authorized?jwt=" + token));
+                                  })
+                                  .then();
     }
 
     @Bean
