@@ -5,11 +5,15 @@
 
 version: 2
 updates:
-  - package-ecosystem: "maven" # See documentation for possible values
+  - package-ecosystem: "gradle" # See documentation for possible values
     directory: "/dictionary-server" # Location of package manifests
     schedule:
-      interval: "daily"
+      interval: "weekly"
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/dictionary-client" # Location of package manifests
+    schedule:
+      interval: "weekly"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
