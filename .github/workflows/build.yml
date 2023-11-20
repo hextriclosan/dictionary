@@ -87,11 +87,11 @@ jobs:
         run: |
           docker push --all-tags solomkinmv/dictionary
 
-#      - uses: superfly/flyctl-actions/setup-flyctl@master
-#        if: "!contains(github.event.head_commit.message, '[skip release]')"
-#
-#      - name: Trigger deploy
-#        if: "!contains(github.event.head_commit.message, '[skip release]')"
-#        run: |
-#          cd dictionary-server
-#          flyctl deploy --remote-only
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+        if: "!contains(github.event.head_commit.message, '[skip release]')"
+
+      - name: Trigger deploy
+        if: "!contains(github.event.head_commit.message, '[skip release]')"
+        run: |
+          cd dictionary-server
+          flyctl deploy --remote-only
