@@ -4,6 +4,7 @@ app = "dictionary"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
+swap_size_mb = 512
 
 [build]
   image = "solomkinmv/dictionary:latest"
@@ -13,6 +14,10 @@ processes = []
 [experimental]
   allowed_public_ports = []
   auto_rollback = true
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "768"
 
 [[services]]
   internal_port = 8080
