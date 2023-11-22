@@ -21,7 +21,7 @@ spring:
 
 security:
   redirect:
-    web: https://dictionary.solomk.in
+    web: https://dictionary.solomk.in/?
 
 management:
   endpoints:
