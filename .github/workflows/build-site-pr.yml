@@ -1,0 +1,29 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Build site PR
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'dictionary-client/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: dictionary-client/package-lock.json
+
+      - name: Build client and copy to backend resources
+        run: |
+          cd dictionary-client
+          npm install
+          npm test

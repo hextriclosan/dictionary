@@ -1,29 +1,17 @@
 # This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Build PR with Gradle
+name: Build server PR
 
 on:
   pull_request:
     branches:
       - main
     paths:
-      - '**.js'
-      - '**.jsx'
-      - '**.ts'
-      - '**.tsx'
-      - '**.java'
-      - '**.css'
-      - '**.html'
-      - '**.yml'
-      - '**.yaml'
-      - '**.json'
-      - '**/pom.xml'
-      - '**.properties'
-      - '**Dockerfile'
+      - 'dictionary-server/**'
 
 jobs:
-  build-server:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -44,21 +32,3 @@ jobs:
         uses: codecov/codecov-action@v3.1.4
         with:
           directory: ./dictionary-server/build/reports/jacoco/test
-
-
-  build-client:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: 'npm'
-          cache-dependency-path: dictionary-client/package-lock.json
-
-      - name: Build client and copy to backend resources
-        run: |
-          cd dictionary-client
-          npm install
-          npm run build:production

@@ -13,12 +13,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.reactive.function.server.HandlerFunction;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -41,15 +39,12 @@ public class RouteConfiguration {
             RouterFunction<ServerResponse> languagesRoute,
             RouterFunction<ServerResponse> wordsRoute,
             RouterFunction<ServerResponse> wordsGroupRoute) {
-        HandlerFunction<ServerResponse> indexPage = (req) -> ServerResponse.ok().bodyValue(new ClassPathResource("public/index.html"));
         return RouterFunctions.route()
                               .nest(path("/api/settings"), () -> settingsRoute)
                               .nest(path("/api/languages"), () -> languagesRoute)
                               .nest(path("/api/languages/{languageCode}/words"), () -> wordsRoute)
                               .nest(path("/api/languages/{languageCode}/groups"), () -> wordsGroupRoute)
                               .nest(path("/api/me"), () -> profileRoute)
-                              .resources("/**", new ClassPathResource("/public/"))
-                              .GET("/**", indexPage)
                               .build();
     }
 

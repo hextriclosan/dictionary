@@ -1,4 +1,4 @@
-name: Build && Deploy
+name: Build and deploy server
 
 on:
   push:
@@ -24,18 +24,6 @@ jobs:
           distribution: 'corretto'
           cache: gradle
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: 'npm'
-          cache-dependency-path: dictionary-client/package-lock.json
-
-      - name: Build client
-        run: |
-          cd dictionary-client
-          npm install
-          npm run build:production
-
       - name: Build server
         run: |
           cd dictionary-server
@@ -46,7 +34,7 @@ jobs:
         run: |
           cd dictionary-server
           ./gradlew currentVersion
-          ./gradlew release -Prelease.disableUncommittedCheck
+          ./gradlew release
 
       - name: Upload test coverage to Codecov
         uses: codecov/codecov-action@v3.1.4
@@ -67,14 +55,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Copy client to backend resources
-        if: "!contains(github.event.head_commit.message, '[skip release]')"
-        run: |
-          cd dictionary-client
-          rm -rf ../dictionary-server/src/main/resources/public/static/
-          \cp -r ./build/* ../dictionary-server/src/main/resources/public/
-          ls -al ../dictionary-server/src/main/resources/public/
 
       - name: Build Docker image
         if: "!contains(github.event.head_commit.message, '[skip release]')"
