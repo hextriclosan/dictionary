@@ -14,6 +14,11 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
+import java.util.Set;
+
+import static java.util.Collections.emptySet;
+
 @Repository
 @RequiredArgsConstructor
 public class PersistentUserWordsRepository implements UserWordsRepository {
@@ -34,7 +39,8 @@ public class PersistentUserWordsRepository implements UserWordsRepository {
     @Override
     public Mono<Word> saveWord(String userId, SupportedLanguage language, UnsavedWord unsavedWord) {
         return repository.save(new WordDocument(null, userId, language.getLanguageCode(),
-                                                unsavedWord.wordText(), null, unsavedWord.translation()))
+                                                unsavedWord.wordText(), null, unsavedWord.translation(),
+                                                emptySet()))
                          .map(WordDocument::toModel);
     }
 
@@ -58,5 +64,15 @@ public class PersistentUserWordsRepository implements UserWordsRepository {
     public Flux<Word> getUserWords(String userId, SupportedLanguage language) {
         return repository.findAllByUserIdAndLanguageCode(userId, language.getLanguageCode())
                          .map(WordDocument::toModel);
+    }
+
+    @Override
+    public Mono<Boolean> allWordsExist(String userId, SupportedLanguage language, Set<String> wordIds) {
+        if (wordIds.isEmpty()) return Mono.just(true);
+
+        Criteria criteria = Criteria.where("_id").in(wordIds);
+        Query query = Query.query(criteria);
+
+        return reactiveMongoTemplate.exists(query, WordDocument.class);
     }
 }

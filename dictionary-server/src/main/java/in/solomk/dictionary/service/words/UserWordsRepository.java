@@ -6,6 +6,8 @@ import in.solomk.dictionary.service.words.model.Word;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Set;
+
 public interface UserWordsRepository {
 
     Mono<Void> deleteAllUserWords(String userId, SupportedLanguage language);
@@ -18,4 +20,6 @@ public interface UserWordsRepository {
     Mono<Word> editWord(String userId, SupportedLanguage language, Word word);
 
     Flux<Word> getUserWords(String userId, SupportedLanguage language);
+
+    Mono<Boolean> allWordsExist(String userId, SupportedLanguage language, Set<String> wordIds);
 }

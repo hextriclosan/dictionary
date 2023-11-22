@@ -4,6 +4,8 @@ import in.solomk.dictionary.service.words.model.Word;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Set;
+
 @Document(collection = "user_words")
 public record WordDocument(
         @Id
@@ -12,7 +14,8 @@ public record WordDocument(
         String languageCode,
         String wordText,
         String meaning,
-        String translation
+        String translation,
+        Set<String> groupIds
 ) {
 
     public Word toModel() {

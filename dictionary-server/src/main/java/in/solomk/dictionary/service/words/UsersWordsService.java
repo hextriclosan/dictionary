@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.Set;
+
 @Service
 @AllArgsConstructor
 public class UsersWordsService {
@@ -35,6 +37,10 @@ public class UsersWordsService {
 
     public Mono<Word> editWord(String userId, SupportedLanguage language, Word word) {
         return repository.editWord(userId, language, word);
+    }
+
+    public Mono<Boolean> allWordsExist(String userId, SupportedLanguage language, Set<String> wordIds) {
+        return repository.allWordsExist(userId, language, wordIds);
     }
 
 }

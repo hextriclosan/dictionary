@@ -14,6 +14,10 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
+
+import static java.util.Collections.emptyList;
+
 @Repository
 @AllArgsConstructor
 public class PersistentWordsGroupRepository implements WordsGroupRepository {
@@ -23,18 +27,19 @@ public class PersistentWordsGroupRepository implements WordsGroupRepository {
 
     @Override
     public Mono<WordsGroup> save(String userId, SupportedLanguage language, UnsavedWordsGroup unsavedWordsGroup) {
-        return repository.save(new WordsGroupDocument(null, userId, language.getLanguageCode(), unsavedWordsGroup.name()))
+        return repository.save(new WordsGroupDocument(null, userId, language.getLanguageCode(),
+                                                      unsavedWordsGroup.name(), emptyList()))
                          .map(WordsGroupDocument::toModel);
     }
 
     @Override
-    public Mono<WordsGroup> editGroup(String userId, SupportedLanguage langauge, WordsGroup updatedWord) {
-        return reactiveMongoTemplate.findAndModify(new Query().addCriteria(Criteria.where("id").is(updatedWord.id())
+    public Mono<WordsGroup> editGroup(String userId, SupportedLanguage langauge, WordsGroup updatedGroup) {
+        return reactiveMongoTemplate.findAndModify(new Query().addCriteria(Criteria.where("id").is(updatedGroup.id())
                                                                                    .and("userId").is(userId)),
-                                                   new Update().set("name", updatedWord.name()),
+                                                   new Update().set("name", updatedGroup.name()),
                                                    WordsGroupDocument.class)
                                     .map(WordsGroupDocument::toModel)
-                                    .map(group -> new WordsGroup(group.id(), updatedWord.name()));
+                                    .map(group -> new WordsGroup(group.id(), updatedGroup.name(), emptyList()));
     }
 
     @Override

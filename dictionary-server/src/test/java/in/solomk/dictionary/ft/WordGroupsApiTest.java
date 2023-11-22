@@ -139,7 +139,7 @@ public class WordGroupsApiTest extends BaseFuncTest {
                 .getResponseBody();
 
         var editedWordsGroup = wordGroupsTestClient
-                .editWordGroup(userToken, ENGLISH.getLanguageCode(), createdWordsGroup.id(), new EditWordsGroupRequest("group-1-edited"))
+                .editWordGroup(userToken, ENGLISH.getLanguageCode(), createdWordsGroup.id(), new EditWordsGroupRequest("group-1-edited", emptyList()))
                 .expectStatus().isOk()
                 .expectBody(WordsGroupResponse.class)
                 .returnResult()
