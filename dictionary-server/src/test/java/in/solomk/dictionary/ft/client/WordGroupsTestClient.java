@@ -51,4 +51,11 @@ public class WordGroupsTestClient {
                             .bodyValue(editWordsGroupRequest)
                             .exchange();
     }
+
+    public ResponseSpec addWordToGroup(String token, String languageCode, String groupId, String wordId) {
+        return webTestClient.put()
+                            .uri("/api/languages/{languageCode}/groups/{groupId}/words/{wordId}", languageCode, groupId, wordId)
+                            .headers(headers -> headers.setBearerAuth(token))
+                            .exchange();
+    }
 }

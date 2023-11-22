@@ -22,6 +22,10 @@ public class UsersWordsService {
                          .map(UserWords::new);
     }
 
+    public Mono<Word> getWord(String userId, SupportedLanguage language, String wordId) {
+        return repository.getWord(userId, language, wordId);
+    }
+
     public Mono<UserWords> deleteUserWord(String userId, SupportedLanguage language, String wordId) {
         return repository.deleteWord(wordId)
                          .then(getUserWords(userId, language));

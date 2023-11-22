@@ -35,10 +35,29 @@ public class WordsApiTest extends BaseFuncTest {
         assertThat(wordResponse)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
-                .isEqualTo(new WordResponse(null, "word-1", "meaning-1"));
+                .isEqualTo(new WordResponse(null, "word-1", "meaning-1", null));
         assertThat(wordResponse.id()).isNotBlank();
 
         verifyUserWordsResponse(ENGLISH, new UserWordsResponse(List.of(wordResponse)));
+    }
+
+    @Test
+    void getsWordById() {
+        userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
+        var createdWordResponse = userWordsTestClient
+                .addWord(userToken, ENGLISH.getLanguageCode(), new CreateWordRequest("word-1", "meaning-1"))
+                .expectStatus().isOk()
+                .expectBody(WordResponse.class)
+                .returnResult()
+                .getResponseBody();
+
+        var requestedWord = userWordsTestClient.getWord(userToken, ENGLISH.getLanguageCode(), createdWordResponse.id())
+                                              .expectStatus().isOk()
+                                              .expectBody(WordResponse.class)
+                                              .returnResult()
+                                              .getResponseBody();
+        assertThat(requestedWord)
+                .isEqualTo(createdWordResponse);
     }
 
     @Test
@@ -167,7 +186,7 @@ public class WordsApiTest extends BaseFuncTest {
         assertThat(editedWordResponse)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
-                .isEqualTo(new WordResponse(null, "word-1-edited", "meaning-1-edited"));
+                .isEqualTo(new WordResponse(null, "word-1-edited", "meaning-1-edited", null));
         assertThat(editedWordResponse.id()).isNotBlank();
 
         verifyUserWordsResponse(ENGLISH, new UserWordsResponse(List.of(editedWordResponse)));

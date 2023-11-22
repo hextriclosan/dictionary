@@ -40,7 +40,7 @@ public class PersistentUserWordsRepository implements UserWordsRepository {
     public Mono<Word> saveWord(String userId, SupportedLanguage language, UnsavedWord unsavedWord) {
         return repository.save(new WordDocument(null, userId, language.getLanguageCode(),
                                                 unsavedWord.wordText(), null, unsavedWord.translation(),
-                                                emptySet()))
+                                                null))
                          .map(WordDocument::toModel);
     }
 
@@ -64,6 +64,12 @@ public class PersistentUserWordsRepository implements UserWordsRepository {
     public Flux<Word> getUserWords(String userId, SupportedLanguage language) {
         return repository.findAllByUserIdAndLanguageCode(userId, language.getLanguageCode())
                          .map(WordDocument::toModel);
+    }
+
+    @Override
+    public Mono<Word> getWord(String userId, SupportedLanguage language, String wordId) {
+        return repository.findByUserIdAndLanguageCodeAndId(userId, language.getLanguageCode(), wordId)
+                .map(WordDocument::toModel);
     }
 
     @Override

@@ -10,4 +10,6 @@ public interface ReactiveMongoWordsGroupRepository extends ReactiveMongoReposito
     Mono<Void> deleteByUserIdAndLanguageCode(String userId, String languageCode);
 
     Flux<WordsGroupDocument> findAllByUserIdAndLanguageCode(String userId, String languageCode);
+
+    Mono<WordsGroupDocument> findByUserIdAndLanguageCodeAndId(String userId, String languageCode, String groupId);
 }

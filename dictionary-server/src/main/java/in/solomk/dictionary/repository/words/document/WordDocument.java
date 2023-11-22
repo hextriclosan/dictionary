@@ -19,6 +19,6 @@ public record WordDocument(
 ) {
 
     public Word toModel() {
-        return new Word(id, wordText, meaning, translation);
+        return new Word(id, wordText, meaning, translation, groupIds);
     }
 }

@@ -14,7 +14,11 @@ public interface WordsGroupRepository {
 
     Mono<Void> deleteGroup(String groupId);
 
+    Mono<Void> addWordToGroup(String userId, SupportedLanguage langauge, String groupId, String wordId);
+
     Mono<Void> deleteAllUserGroups(String userId, String languageCode);
 
     Flux<WordsGroup> findAllByUserIdAndLanguageCode(String userId, String languageCode);
+
+    Mono<WordsGroup> findByGroupId(String userId, String languageCode, String groupId);
 }

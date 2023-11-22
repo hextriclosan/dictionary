@@ -3,6 +3,7 @@ package in.solomk.dictionary.api.word;
 import in.solomk.dictionary.api.word.handler.AddWordHandler;
 import in.solomk.dictionary.api.word.handler.DeleteWordHandler;
 import in.solomk.dictionary.api.word.handler.EditWordHandler;
+import in.solomk.dictionary.api.word.handler.GetWordHandler;
 import in.solomk.dictionary.api.word.handler.GetWordsHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +18,7 @@ public class WordRouteConfiguration {
     public RouterFunction<ServerResponse> wordsRoute(AddWordHandler addWordHandler,
                                                      DeleteWordHandler deleteWordHandler,
                                                      EditWordHandler editWordHandler,
-                                                     GetWordsHandler getWordHandler,
+                                                     GetWordHandler getWordHandler,
                                                      GetWordsHandler getWordsHandler) {
         return RouterFunctions.route()
                               .GET("", getWordsHandler)

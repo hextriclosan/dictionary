@@ -21,5 +21,7 @@ public interface UserWordsRepository {
 
     Flux<Word> getUserWords(String userId, SupportedLanguage language);
 
+    Mono<Word> getWord(String userId, SupportedLanguage language, String wordId);
+
     Mono<Boolean> allWordsExist(String userId, SupportedLanguage language, Set<String> wordIds);
 }

@@ -22,6 +22,10 @@ public class WordsGroupService {
         return repository.findAllByUserIdAndLanguageCode(userId, language.getLanguageCode());
     }
 
+    public Mono<WordsGroup> getGroup(String userId, SupportedLanguage language, String groupId) {
+        return repository.findByGroupId(userId, language.getLanguageCode(), groupId);
+    }
+
     public Mono<WordsGroup> saveWordsGroup(String userId, SupportedLanguage language, UnsavedWordsGroup unsavedWordsGroup) {
         return repository.save(userId, language, unsavedWordsGroup);
     }
@@ -39,6 +43,10 @@ public class WordsGroupService {
     public Flux<WordsGroup> deleteWordsGroup(String userId, SupportedLanguage language, String groupId) {
         return repository.deleteGroup(groupId)
                          .thenMany(getAllUserGroups(userId, language));
+    }
+
+    public Mono<Void> addWordToGroup(String userId, SupportedLanguage language, String groupId, String wordId) {
+        return repository.addWordToGroup(userId, language, groupId, wordId);
     }
 
     public Mono<Void> deleteAllUserGroups(String userId, String languageCode) {
