@@ -21,6 +21,7 @@ public class MongoConfiguration {
         return mappingConverter;
     }
 
+// todo: ensure that transaction rollback works
 //    @Bean
 //    ReactiveMongoTransactionManager transactionManager(ReactiveMongoDatabaseFactory factory) {
 //        return new ReactiveMongoTransactionManager(factory);
