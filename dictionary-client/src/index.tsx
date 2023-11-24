@@ -14,6 +14,7 @@ import {AuthProvider} from "./components/auth/authentication-helpers";
 import {UserLanguagesComponent} from "./components/languages/UserLanguagesComponent";
 import {CurrentLanguageProvider} from "./context/CurrentLanguageContext";
 import {WordGroupsComponent} from "./components/groups/WordGroupsComponent";
+import {SingleGroupComponent} from "./components/groups/SingleGroupComponent";
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
@@ -39,6 +40,11 @@ root.render(
                             <Route path="/groups" element={
                                 <RequireAuth>
                                     <WordGroupsComponent/>
+                                </RequireAuth>
+                            }/>
+                            <Route path="/groups/:groupId" element={
+                                <RequireAuth>
+                                    <SingleGroupComponent/>
                                 </RequireAuth>
                             }/>
                             <Route path="/languages" element={

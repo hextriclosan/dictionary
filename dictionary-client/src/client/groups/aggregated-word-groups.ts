@@ -1,5 +1,5 @@
-import {WordsGroup} from "./words-group";
+import {Group} from "./group";
 
 export interface AggregatedWordGroups {
-    groups: WordsGroup[],
+    groups: Group[],
 }

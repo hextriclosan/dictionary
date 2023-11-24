@@ -1,10 +1,10 @@
 import React, {useState} from "react";
 import useCurrentLanguage from "../../context/CurrentLanguageContext";
 import {useGroupsClient} from "../../client/groups/groups-client";
-import {WordsGroup} from "../../client/groups/words-group";
+import {Group} from "../../client/groups/group";
 
 interface AddGroupComponentProps {
-    onGroupAdded: (group: WordsGroup) => void
+    onGroupAdded: (group: Group) => void
 }
 
 export function AddGroupComponent(props: AddGroupComponentProps) {

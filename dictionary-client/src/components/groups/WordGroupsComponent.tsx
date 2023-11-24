@@ -1,20 +1,22 @@
 import {useGroupsClient} from "../../client/groups/groups-client";
 import useCurrentLanguage from "../../context/CurrentLanguageContext";
 import React, {useEffect, useState} from "react";
-import {WordsGroup} from "../../client/groups/words-group";
+import {Group} from "../../client/groups/group";
 import {AddGroupComponent} from "./AddGroupComponent";
 import * as Icon from 'react-bootstrap-icons';
+import {useNavigate} from "react-router";
 
 export function WordGroupsComponent() {
+    const navigate = useNavigate();
     const groupsClient = useGroupsClient();
     const currentLanguageContext = useCurrentLanguage();
     const currentLanguage = currentLanguageContext.currentLanguage;
 
-    const [groups, setGroups] = useState<WordsGroup[]>([]);
+    const [groups, setGroups] = useState<Group[]>([]);
     const [editingGroupId, setEditingGroupId] = useState<string>("");
     const [newGroupName, setNewGroupName] = useState<string>("");
 
-    async function handleDeleteGroup(group: WordsGroup) {
+    async function handleDeleteGroup(group: Group) {
         if (!currentLanguage) return;
         try {
             await groupsClient.deleteGroup(currentLanguage, group);
@@ -24,7 +26,7 @@ export function WordGroupsComponent() {
         }
     }
 
-    function handleStartEditGroup(group: WordsGroup) {
+    function handleStartEditGroup(group: Group) {
         setEditingGroupId(group.id);
         setNewGroupName(group.name);
     }
@@ -34,7 +36,7 @@ export function WordGroupsComponent() {
         setNewGroupName("");
     }
 
-    async function handleSaveGroup(group: WordsGroup) {
+    async function handleSaveGroup(group: Group) {
         if (!newGroupName || !currentLanguage) {
             return;
         }
@@ -87,6 +89,7 @@ export function WordGroupsComponent() {
                         ) : (
                             <>
                                 <span>{group.name}</span>
+                                <button onClick={() => navigate(`/groups/${group.id}`)}><Icon.DoorOpen/></button>
                                 <button onClick={() => handleStartEditGroup(group)}><Icon.Pencil/></button>
                                 <button onClick={() => handleDeleteGroup(group)}><Icon.Trash/></button>
                             </>
