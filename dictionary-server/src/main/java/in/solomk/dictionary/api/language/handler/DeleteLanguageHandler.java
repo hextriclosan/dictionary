@@ -4,6 +4,7 @@ import in.solomk.dictionary.api.language.dto.LearningLanguagesAggregatedResponse
 import in.solomk.dictionary.api.language.mapper.LearningLanguagesWebApiMapper;
 import in.solomk.dictionary.api.word.dto.WordResponse;
 import in.solomk.dictionary.exception.BadRequestException;
+import in.solomk.dictionary.service.group.WordsGroupService;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import in.solomk.dictionary.service.language.UserLanguagesService;
 import in.solomk.dictionary.service.words.UsersWordsService;
@@ -25,24 +26,27 @@ public class DeleteLanguageHandler implements HandlerFunction<ServerResponse> {
 
     private final UserLanguagesService userLanguagesService;
     private final UsersWordsService usersWordsService;
+    private final WordsGroupService wordsGroupService;
     private final LearningLanguagesWebApiMapper mapper;
 
     @Override
     @RegisterReflectionForBinding(value = WordResponse.class)
     public Mono<ServerResponse> handle(ServerRequest request) {
         return request.principal()
-                .map(Principal::getName)
-                .flatMap(userId -> ServerResponse.ok()
-                                                 .contentType(APPLICATION_JSON)
-                                                 .body(deleteLanguageAndWords(request, userId),
-                                                       LearningLanguagesAggregatedResponse.class));
+                      .map(Principal::getName)
+                      .flatMap(userId -> ServerResponse.ok()
+                                                       .contentType(APPLICATION_JSON)
+                                                       .body(deleteLanguageAndWordsAndGroups(request, userId),
+                                                             LearningLanguagesAggregatedResponse.class));
     }
 
-    private Mono<LearningLanguagesAggregatedResponse> deleteLanguageAndWords(ServerRequest request, String userId) {
+    // Should be transactional
+    private Mono<LearningLanguagesAggregatedResponse> deleteLanguageAndWordsAndGroups(ServerRequest request, String userId) {
         var supportedLanguage = getSafeLanguage(request.pathVariable("languageCode"));
         return usersWordsService.deleteAllUserWords(userId, supportedLanguage)
+                                .then(wordsGroupService.deleteAllUserGroups(userId, supportedLanguage.getLanguageCode()))
                                 .then(userLanguagesService.deleteLearningLanguage(userId, supportedLanguage))
-                .map(mapper::toLearningLanguagesAggregatedResponse);
+                                .map(mapper::toLearningLanguagesAggregatedResponse);
     }
 
 
