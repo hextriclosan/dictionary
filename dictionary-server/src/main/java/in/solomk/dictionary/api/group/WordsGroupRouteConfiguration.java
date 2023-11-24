@@ -1,11 +1,11 @@
 package in.solomk.dictionary.api.group;
 
 import in.solomk.dictionary.api.group.handler.AddWordToGroupHandler;
-import in.solomk.dictionary.api.group.handler.AddWordsGroupHandler;
-import in.solomk.dictionary.api.group.handler.DeleteWordsGroupHandler;
-import in.solomk.dictionary.api.group.handler.EditWordsGroupHandler;
+import in.solomk.dictionary.api.group.handler.CreateGroupHandler;
+import in.solomk.dictionary.api.group.handler.DeleteGroupHandler;
+import in.solomk.dictionary.api.group.handler.EditGroupHandler;
 import in.solomk.dictionary.api.group.handler.GetGroupHandler;
-import in.solomk.dictionary.api.group.handler.GetWordGroupsHandler;
+import in.solomk.dictionary.api.group.handler.GetAllGroupsHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -16,18 +16,18 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 public class WordsGroupRouteConfiguration {
 
     @Bean
-    public RouterFunction<ServerResponse> wordsGroupRoute(GetWordGroupsHandler getWordGroupsHandler,
-                                                          AddWordsGroupHandler addWordsGroupHandler,
-                                                          DeleteWordsGroupHandler deleteWordsGroupHandler,
-                                                          EditWordsGroupHandler editWordsGroupHandler,
+    public RouterFunction<ServerResponse> wordsGroupRoute(GetAllGroupsHandler getAllGroupsHandler,
+                                                          CreateGroupHandler createGroupHandler,
+                                                          DeleteGroupHandler deleteGroupHandler,
+                                                          EditGroupHandler editGroupHandler,
                                                           AddWordToGroupHandler addWordToGroupHandler,
                                                           GetGroupHandler getGroupHandler) {
         return RouterFunctions.route()
-                              .GET("", getWordGroupsHandler)
-                              .POST("", addWordsGroupHandler)
+                              .GET("", getAllGroupsHandler)
+                              .POST("", createGroupHandler)
                               .GET("/{groupId}", getGroupHandler)
-                              .DELETE("/{groupId}", deleteWordsGroupHandler)
-                              .PATCH("/{groupId}", editWordsGroupHandler)
+                              .DELETE("/{groupId}", deleteGroupHandler)
+                              .PATCH("/{groupId}", editGroupHandler)
                               .PUT("/{groupId}/words/{wordId}", addWordToGroupHandler)
                               .build();
     }

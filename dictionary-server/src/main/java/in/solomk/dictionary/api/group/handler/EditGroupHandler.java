@@ -18,7 +18,7 @@ import java.security.Principal;
 
 @Component
 @AllArgsConstructor
-public class EditWordsGroupHandler implements HandlerFunction<ServerResponse> {
+public class EditGroupHandler implements HandlerFunction<ServerResponse> {
 
     private final WordsGroupService wordsGroupService;
     private final UserLanguagesService userLanguagesService;

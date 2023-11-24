@@ -24,7 +24,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Slf4j
 @Component
 @AllArgsConstructor
-public class AddWordsGroupHandler implements HandlerFunction<ServerResponse> {
+public class CreateGroupHandler implements HandlerFunction<ServerResponse> {
 
     private final WordsGroupService wordsGroupService;
     private final UserLanguagesService userLanguagesService;
