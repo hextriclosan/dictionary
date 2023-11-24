@@ -49,6 +49,10 @@ public class WordsGroupService {
         return repository.addWordToGroup(userId, language, groupId, wordId);
     }
 
+    public Mono<Void> deleteWordFromGroup(String userId, SupportedLanguage language, String groupId, String wordId) {
+        return repository.deleteWordFromGroup(userId, language, groupId, wordId);
+    }
+
     public Mono<Void> deleteAllUserGroups(String userId, String languageCode) {
         return repository.deleteAllUserGroups(userId, languageCode);
     }

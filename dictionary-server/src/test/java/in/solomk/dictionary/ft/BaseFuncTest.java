@@ -3,7 +3,7 @@ package in.solomk.dictionary.ft;
 import in.solomk.dictionary.api.auth.security.TokenService;
 import in.solomk.dictionary.ft.client.ActuatorTestClient;
 import in.solomk.dictionary.ft.client.UserLanguagesTestClient;
-import in.solomk.dictionary.ft.client.UserWordsTestClient;
+import in.solomk.dictionary.ft.client.WordsTestClient;
 import in.solomk.dictionary.service.profile.UserProfileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class BaseFuncTest {
     protected UserLanguagesTestClient userLanguagesTestClient;
 
     @Autowired
-    protected UserWordsTestClient userWordsTestClient;
+    protected WordsTestClient wordsTestClient;
     protected String userId;
     @Autowired
     protected ActuatorTestClient actuatorTestClient;

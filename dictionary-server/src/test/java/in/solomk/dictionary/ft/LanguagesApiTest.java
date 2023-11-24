@@ -52,16 +52,16 @@ public class LanguagesApiTest extends BaseFuncTest {
     @Test
     void removesLanguageWithAllRelatedWords() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
-        userWordsTestClient.addWord(userToken, ENGLISH.getLanguageCode(), new CreateWordRequest("word-1", "meaning-1"));
+        wordsTestClient.addWord(userToken, ENGLISH.getLanguageCode(), new CreateWordRequest("word-1", "meaning-1"));
 
         userLanguagesTestClient.deleteLanguage(userToken, ENGLISH.getLanguageCode())
                                .expectStatus()
                                .isOk();
-        userWordsTestClient.getUserWords(userToken, ENGLISH.getLanguageCode())
-                           .expectStatus()
-                           .isOk()
-                           .expectBody()
-                           .json("""
+        wordsTestClient.getUserWords(userToken, ENGLISH.getLanguageCode())
+                       .expectStatus()
+                       .isOk()
+                       .expectBody()
+                       .json("""
                                          {
                                            "words": []
                                          }""", true);

@@ -17,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static java.util.Collections.emptyList;
-
 @Slf4j
 @Repository
 @AllArgsConstructor
@@ -56,11 +54,25 @@ public class PersistentWordsGroupRepository implements WordsGroupRepository {
 
         return reactiveMongoTemplate.updateFirst(createGroupQuery(userId, language, groupId), groupUpdate, WordsGroupDocument.class)
                                     .then(reactiveMongoTemplate.updateFirst(createWordQuery(userId, language, wordId), wordUpdate, WordDocument.class))
-                .mapNotNull(updateResult -> {
-                    log.debug("Successfully linked wordId and groupId [userId={}, wordId={}, groupId={}, ack={}]",
-                              userId, groupId, wordId, updateResult.wasAcknowledged());
-                    return null;
-                });
+                                    .mapNotNull(updateResult -> {
+                                        log.debug("Successfully linked wordId and groupId [userId={}, wordId={}, groupId={}, ack={}]",
+                                                  userId, groupId, wordId, updateResult.wasAcknowledged());
+                                        return null;
+                                    });
+    }
+
+    @Override
+    public Mono<Void> deleteWordFromGroup(String userId, SupportedLanguage language, String groupId, String wordId) {
+        Update groupUpdate = new Update().pull("wordIds", wordId);
+        Update wordUpdate = new Update().pull("groupIds", groupId);
+
+        return reactiveMongoTemplate.updateFirst(createGroupQuery(userId, language, groupId), groupUpdate, WordsGroupDocument.class)
+                                    .then(reactiveMongoTemplate.updateFirst(createWordQuery(userId, language, wordId), wordUpdate, WordDocument.class))
+                                    .mapNotNull(updateResult -> {
+                                        log.debug("Successfully unlinked wordId and groupId [userId={}, wordId={}, groupId={}, ack={}]",
+                                                  userId, groupId, wordId, updateResult.wasAcknowledged());
+                                        return null;
+                                    });
     }
 
     @Override
