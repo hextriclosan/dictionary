@@ -3,7 +3,6 @@ package in.solomk.dictionary.ft.client;
 import in.solomk.dictionary.api.word.dto.CreateWordRequest;
 import in.solomk.dictionary.api.word.dto.EditWordRequest;
 import in.solomk.dictionary.api.word.dto.WordResponse;
-import in.solomk.dictionary.service.words.model.Word;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -45,7 +44,7 @@ public class WordsTestClient {
                             .exchange();
     }
 
-    public WordResponse getWord(String token , String languageCode, String wordId) {
+    public WordResponse getWord(String token, String languageCode, String wordId) {
         return getWordSpec(token, languageCode, wordId)
                 .expectStatus().isOk()
                 .expectBody(WordResponse.class)

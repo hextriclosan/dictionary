@@ -3,7 +3,6 @@ package in.solomk.dictionary.ft.client;
 import in.solomk.dictionary.api.group.dto.CreateWordsGroupRequest;
 import in.solomk.dictionary.api.group.dto.EditWordsGroupRequest;
 import in.solomk.dictionary.api.group.dto.WordsGroupResponse;
-import in.solomk.dictionary.service.group.model.WordsGroup;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -29,7 +28,7 @@ public class WordGroupsTestClient {
                             .exchange();
     }
 
-    public WordsGroupResponse getGroup(String token , String languageCode, String groupId) {
+    public WordsGroupResponse getGroup(String token, String languageCode, String groupId) {
         return getGroupSpec(token, languageCode, groupId)
                 .expectStatus().isOk()
                 .expectBody(WordsGroupResponse.class)
