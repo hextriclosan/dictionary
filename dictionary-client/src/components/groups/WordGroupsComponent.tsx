@@ -5,6 +5,9 @@ import {Group} from "../../client/groups/group";
 import {AddGroupComponent} from "./AddGroupComponent";
 import * as Icon from 'react-bootstrap-icons';
 import {useNavigate} from "react-router";
+import { Typography } from 'antd';
+
+const { Title } = Typography;
 
 export function WordGroupsComponent() {
     const navigate = useNavigate();
@@ -75,7 +78,7 @@ export function WordGroupsComponent() {
 
     return (
         <div>
-            <h1>Word Groups</h1>
+            <Title>Word Groups</Title>
             <AddGroupComponent onGroupAdded={createdGroup => setGroups([...groups, createdGroup])}/>
             <div>
                 {groups.map(group => (
