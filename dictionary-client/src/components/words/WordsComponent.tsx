@@ -102,7 +102,6 @@ type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 
 function WordsComponent() {
     const [words, setWords] = useState<Word[]>([]);
-    let editedWord: Word | undefined = undefined;
     const dictionaryClient = useDictionaryClient();
     const currentLanguageContext = useCurrentLanguage();
     const currentLanguage = currentLanguageContext.currentLanguage;
@@ -126,26 +125,6 @@ function WordsComponent() {
     async function removeWord(word: Word) {
         const userWords = await dictionaryClient.deleteWord(currentLanguage!, word);
         setWords(userWords.words);
-    }
-
-    async function saveWord(word: Word) {
-        console.log("Saving word", editedWord, word);
-        if (!editedWord) return;
-        if (!isWordEdited(word)) {
-            cancelEditWord(word);
-            return;
-        }
-        const updated = await dictionaryClient.updateWord(currentLanguage!, editedWord);
-        setWords((prevWords) => prevWords.map((w) => (w.id === updated.id ? updated : w)));
-        editedWord = undefined;
-    }
-
-    function isWordEdited(word: Word) {
-        return editedWord?.id === word.id;
-    }
-
-    function cancelEditWord(word: Word) {
-        editedWord = undefined;
     }
 
     function renderGroups(wordToRender: Word) {
