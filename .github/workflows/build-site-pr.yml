@@ -11,7 +11,7 @@ on:
       - 'dictionary-client/**'
 
 jobs:
-  build:
+  build-site:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,3 +27,4 @@ jobs:
           cd dictionary-client
           npm install
           npm test
+          npm run build:production

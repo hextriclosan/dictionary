@@ -11,7 +11,7 @@ on:
       - 'dictionary-server/**'
 
 jobs:
-  build:
+  build-server:
     runs-on: ubuntu-latest
 
     steps:
