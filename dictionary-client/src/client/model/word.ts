@@ -1,6 +1,6 @@
 export interface Word {
-    readonly id: string;
-    readonly wordText: string;
-    readonly translation: string;
-
+    id: string;
+    wordText: string;
+    translation: string;
+    groupIds: string[];
 }

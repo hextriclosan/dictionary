@@ -4,7 +4,8 @@ import {useDictionaryClient} from "../../client/dictionary-client";
 import useCurrentLanguage from "../../context/CurrentLanguageContext";
 import AddWordComponent from "./AddWordComponent";
 import * as Icon from 'react-bootstrap-icons';
-import {Avatar, List, Typography} from 'antd';
+import {Avatar, List, Table, Tag, Typography} from 'antd';
+import {ColumnsType} from "antd/es/table";
 
 const {Title, Text, Paragraph} = Typography;
 
@@ -72,36 +73,66 @@ function WordsComponent() {
         editedWord = undefined;
     }
 
+    const columns: ColumnsType<Word> = [
+        {
+            title: 'Text',
+            dataIndex: 'wordText',
+            key: 'text',
+            render: (_, word) => (
+                <Text editable={{
+                    onStart: () => editWord(word),
+                    onChange: (text) => updateWord(word, "wordText", text),
+                    onEnd: () => saveWord(word),
+                    onCancel: () => cancelEditWord(word),
+                }}>{word.wordText}</Text>),
+        },
+        {
+            title: 'Translation',
+            dataIndex: 'translation',
+            key: 'translation',
+            render: (_, word) => (
+                <Text editable={{
+                    onStart: () => editWord(word),
+                    onChange: (text) => updateWord(word, "translation", text),
+                    onEnd: () => saveWord(word),
+                    onCancel: () => cancelEditWord(word),
+                }}>{word.wordText}</Text>),
+        },
+        {
+            title: 'Tags',
+            key: 'tags',
+            dataIndex: 'tags',
+            render: (_, {groupIds}) => (
+                <>
+                    {groupIds?.map((tag) => {
+                        let color = tag.length > 5 ? 'geekblue' : 'green';
+                        if (tag === 'loser') {
+                            color = 'volcano';
+                        }
+                        return (
+                            <Tag color={color} key={tag}>
+                                {tag.toUpperCase()}
+                            </Tag>
+                        );
+                    })}
+                </>
+            ),
+        },
+        {
+            title: 'Action',
+            key: 'action',
+            render: (_, record) => (
+                <button onClick={() => removeWord(record)}><Icon.Trash/></button>
+            ),
+        },
+    ];
+
+
     return (
         <div>
             <Title>Words</Title>
             <AddWordComponent onWordAdded={(word) => setWords([...words, word])}/>
-            <List dataSource={words}
-                  renderItem={word => (
-                      <List.Item>
-                          <List.Item.Meta
-                              avatar={<Avatar src={"https://randomuser.me/api/portraits/thumb/men/75.jpg"} />}
-                              title={<Text editable={{
-                                  onStart: () => editWord(word),
-                                  onChange: (text) => updateWord(word, "wordText", text),
-                                  onEnd: () => saveWord(word),
-                                  onCancel: () => cancelEditWord(word),
-                              }}>{word.wordText}</Text>}
-                          />
-
-                          <Text editable={{
-                              onStart: () => editWord(word),
-                              onChange: (text) => updateWord(word, "translation", text),
-                              onEnd: () => saveWord(word),
-                              onCancel: () => cancelEditWord(word),
-                          }}>{word.translation}</Text>
-                          <div>
-                              <button onClick={() => removeWord(word)}><Icon.Trash/></button>
-                          </div>
-                      </List.Item>
-                  )}
-            />
-
+            <Table dataSource={words} columns={columns}/>
         </div>
     );
 }
