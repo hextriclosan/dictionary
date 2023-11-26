@@ -43,7 +43,7 @@ export function SingleGroupComponent() {
 
         fetchData()
             .catch(console.error);
-    }, [currentLanguageContext.currentLanguage]);
+    }, [currentLanguageContext, dictionaryClient, groupId, groupsClient]);
 
     if (!currentLanguageContext) {
         // Context value is not available yet

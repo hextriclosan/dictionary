@@ -28,7 +28,7 @@ export function AddWordToGroupComponent(props: AddGroupComponentProps) {
 
         fetchData()
             .catch(console.error);
-    }, [currentLanguageContext.currentLanguage]);
+    }, [currentLanguage, dictionaryClient, props.existingGroupWords]);
 
 
     async function handleAddWords(word: Word) {
