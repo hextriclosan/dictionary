@@ -3,6 +3,7 @@ import {useDictionaryClient} from "../../client/dictionary-client";
 import {UnsavedWord} from "../../client/model/unsaved-word";
 import useCurrentLanguage from "../../context/CurrentLanguageContext";
 import {Word} from "../../client/model/word";
+import {Button} from "antd";
 
 interface AddWordComponentProps {
     onWordAdded: (word: Word) => void
@@ -50,7 +51,9 @@ function AddWordComponent(props: AddWordComponentProps) {
     }, []);
 
     if (!showAddWordInput) {
-        return <button onClick={() => setShowAddWordInput(true)}>Add word</button>
+        return <Button onClick={() => setShowAddWordInput(true)} type="primary" style={{ marginBottom: 16 }}>
+            Add word
+        </Button>
     }
 
     return <div>
@@ -76,8 +79,8 @@ function AddWordComponent(props: AddWordComponentProps) {
             />
         </div>
         <div>
-            <button onClick={onAddWord}>Add word</button>
-            <button onClick={() => setShowAddWordInput(false)}>Cancel</button>
+            <Button onClick={onAddWord} type="primary" style={{ marginBottom: 16 }}>AddWord</Button>
+            <Button onClick={() => setShowAddWordInput(false)} type="default" style={{ marginBottom: 16 }}>Cancel</Button>
         </div>
     </div>
 }

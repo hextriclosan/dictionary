@@ -3,9 +3,9 @@ import useCurrentLanguage from "../../context/CurrentLanguageContext";
 import React, {useEffect, useState} from "react";
 import {Group} from "../../client/groups/group";
 import {AddGroupComponent} from "./AddGroupComponent";
-import * as Icon from 'react-bootstrap-icons';
 import {useNavigate} from "react-router";
 import { Typography } from 'antd';
+import {DeleteOutlined, EditOutlined, FolderOpenOutlined} from "@ant-design/icons";
 
 const { Title } = Typography;
 
@@ -92,9 +92,9 @@ export function WordGroupsComponent() {
                         ) : (
                             <>
                                 <span>{group.name}</span>
-                                <button onClick={() => navigate(`/groups/${group.id}`)}><Icon.DoorOpen/></button>
-                                <button onClick={() => handleStartEditGroup(group)}><Icon.Pencil/></button>
-                                <button onClick={() => handleDeleteGroup(group)}><Icon.Trash/></button>
+                                <button onClick={() => navigate(`/groups/${group.id}`)}><FolderOpenOutlined /></button>
+                                <button onClick={() => handleStartEditGroup(group)}><EditOutlined /></button>
+                                <button onClick={() => handleDeleteGroup(group)}><DeleteOutlined /></button>
                             </>
                         )}
                     </div>

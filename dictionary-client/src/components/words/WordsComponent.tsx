@@ -3,10 +3,10 @@ import {Word} from "../../client/model/word";
 import {useDictionaryClient} from "../../client/dictionary-client";
 import useCurrentLanguage from "../../context/CurrentLanguageContext";
 import AddWordComponent from "./AddWordComponent";
-import * as Icon from 'react-bootstrap-icons';
-import {Form, FormInstance, Input, InputRef, Table, Tag, Typography} from 'antd';
+import {Button, Form, FormInstance, Input, InputRef, Table, Tag, Typography} from 'antd';
 import {ColumnType} from "antd/es/table";
 import "./WordsComponent.css";
+import {DeleteOutlined} from "@ant-design/icons";
 
 const {Title} = Typography;
 
@@ -187,7 +187,7 @@ function WordsComponent() {
             title: 'Action',
             key: 'action',
             render: (_, word: Word) => (
-                <button onClick={() => removeWord(word)}><Icon.Trash/></button>
+                <Button onClick={() => removeWord(word)}><DeleteOutlined /></Button>
             ),
         },
     ];

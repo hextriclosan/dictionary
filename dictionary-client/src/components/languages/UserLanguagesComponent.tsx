@@ -5,7 +5,7 @@ import {UserLanguage} from "../../client/languages/user-language";
 import {useLanguagesClient} from "../../client/languages/languages-client";
 import {LanguageSelectorComponent} from "./LanguageSelectorComponent";
 import useCurrentLanguage from "../../context/CurrentLanguageContext";
-import * as Icon from 'react-bootstrap-icons';
+import {DeleteOutlined} from "@ant-design/icons";
 
 export function UserLanguagesComponent() {
     const languagesClient = useLanguagesClient();
@@ -45,7 +45,7 @@ export function UserLanguagesComponent() {
                     <li key={userLanguage.languageCode}>
                         <span>{userLanguage.languageName}</span>
                         <button onClick={() => removeLanguage(userLanguage)}>
-                            <Icon.Trash/>
+                            <DeleteOutlined />
                         </button>
                     </li>
                 ))}
