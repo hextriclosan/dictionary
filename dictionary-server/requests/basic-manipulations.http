@@ -7,13 +7,13 @@ GET {{dictionary-server-host}}/
     });
 %}
 
-### Add user word
-POST {{dictionary-server-host}}/api/languages/en/words
+### Add user learningItem
+POST {{dictionary-server-host}}/api/languages/en/learning-items
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "wordText": "test",
+  "text": "test",
   "translation": "тест"
 }
 
@@ -22,23 +22,23 @@ Content-Type: application/json
         client.assert(response.status === 200, "Response status is not 200");
     });
 
-    client.global.set("created-word-id", response.body.id);
+    client.global.set("created-learningItem-id", response.body.id);
 %}
 
-### Get user words
-GET {{dictionary-server-host}}/api/languages/en/words
+### Get user learning items
+GET {{dictionary-server-host}}/api/languages/en/learning-items
 Authorization: Bearer {{auth_token}}
 
 > {%
     client.test("Request executed successfully", function() {
         client.assert(response.status === 200, "Response status is not 200");
-        client.assert(response.body.words.length > 0, "Response should contain words");
+        client.assert(response.body.learningItems.length > 0, "Response should contain learningItems");
     });
 %}
 
 
-### Delete use word
-DELETE {{dictionary-server-host}}/api/languages/en/words/{{created-word-id}}
+### Delete use learningItem
+DELETE {{dictionary-server-host}}/api/languages/en/learning-items/{{created-learningItem-id}}
 Authorization: Bearer {{auth_token}}
 
 > {%

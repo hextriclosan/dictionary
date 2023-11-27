@@ -28,8 +28,8 @@ import org.springframework.web.reactive.function.server.RouterFunction;
         @MockBean(UserProfileService.class),
         @MockBean(name = "settingsRoute", classes = RouterFunction.class),
         @MockBean(name = "languagesRoute", classes = RouterFunction.class),
-        @MockBean(name = "wordsRoute", classes = RouterFunction.class),
-        @MockBean(name = "wordsGroupRoute", classes = RouterFunction.class),
+        @MockBean(name = "learningItemsRoute", classes = RouterFunction.class),
+        @MockBean(name = "groupsRoute", classes = RouterFunction.class),
 })
 @ActiveProfiles("test")
 public class SecurityControllerTest {

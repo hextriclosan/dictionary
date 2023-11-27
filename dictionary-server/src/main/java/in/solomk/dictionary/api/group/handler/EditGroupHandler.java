@@ -1,9 +1,9 @@
 package in.solomk.dictionary.api.group.handler;
 
-import in.solomk.dictionary.api.group.dto.EditWordsGroupRequest;
-import in.solomk.dictionary.api.group.dto.WordsGroupResponse;
-import in.solomk.dictionary.api.group.mapper.WordsGroupWebApiMapper;
-import in.solomk.dictionary.service.group.WordsGroupService;
+import in.solomk.dictionary.api.group.dto.EditGroupRequest;
+import in.solomk.dictionary.api.group.dto.GroupResponse;
+import in.solomk.dictionary.api.group.mapper.GroupWebApiMapper;
+import in.solomk.dictionary.service.group.GroupsService;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import in.solomk.dictionary.service.language.UserLanguagesService;
 import lombok.AllArgsConstructor;
@@ -20,9 +20,9 @@ import java.security.Principal;
 @AllArgsConstructor
 public class EditGroupHandler implements HandlerFunction<ServerResponse> {
 
-    private final WordsGroupService wordsGroupService;
+    private final GroupsService groupsService;
     private final UserLanguagesService userLanguagesService;
-    private final WordsGroupWebApiMapper mapper;
+    private final GroupWebApiMapper mapper;
 
     @Override
     public Mono<ServerResponse> handle(ServerRequest request) {
@@ -30,26 +30,26 @@ public class EditGroupHandler implements HandlerFunction<ServerResponse> {
                       .map(Principal::getName)
                       .flatMap(userId -> ServerResponse.ok()
                                                        .contentType(MediaType.APPLICATION_JSON)
-                                                       .body(editAndValidateStudiedLanguage(request, userId), WordsGroupResponse.class));
+                                                       .body(editAndValidateStudiedLanguage(request, userId), GroupResponse.class));
     }
 
-    private Mono<WordsGroupResponse> editAndValidateStudiedLanguage(ServerRequest request, String userId) {
+    private Mono<GroupResponse> editAndValidateStudiedLanguage(ServerRequest request, String userId) {
         var supportedLanguage = extractLanguageCode(request);
         return userLanguagesService.validateLanguageIsStudied(userId, supportedLanguage)
                                    .then(editGroup(request, userId));
     }
 
-    private Mono<WordsGroupResponse> editGroup(ServerRequest request, String userId) {
+    private Mono<GroupResponse> editGroup(ServerRequest request, String userId) {
         return extractRequestBody(request)
-                .flatMap(editWordsGroupRequest -> wordsGroupService
-                        .editWordsGroup(userId,
-                                        extractLanguageCode(request),
-                                        mapper.toWordsGroup(extractGroupId(request), editWordsGroupRequest)))
-                .map(mapper::toWordsGroupResponse);
+                .flatMap(editGroupRequest -> groupsService
+                        .editGroup(userId,
+                                   extractLanguageCode(request),
+                                   mapper.toGroup(extractGroupId(request), editGroupRequest)))
+                .map(mapper::toGroupResponse);
     }
 
-    private Mono<EditWordsGroupRequest> extractRequestBody(ServerRequest request) {
-        return request.bodyToMono(EditWordsGroupRequest.class);
+    private Mono<EditGroupRequest> extractRequestBody(ServerRequest request) {
+        return request.bodyToMono(EditGroupRequest.class);
     }
 
     private SupportedLanguage extractLanguageCode(ServerRequest request) {

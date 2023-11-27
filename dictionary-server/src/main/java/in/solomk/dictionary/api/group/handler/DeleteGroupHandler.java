@@ -1,9 +1,9 @@
 package in.solomk.dictionary.api.group.handler;
 
-import in.solomk.dictionary.api.group.mapper.WordsGroupWebApiMapper;
+import in.solomk.dictionary.api.group.mapper.GroupWebApiMapper;
 import in.solomk.dictionary.exception.BadRequestException;
-import in.solomk.dictionary.service.group.WordsGroupService;
-import in.solomk.dictionary.service.group.model.WordsGroup;
+import in.solomk.dictionary.service.group.GroupsService;
+import in.solomk.dictionary.service.group.model.Group;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
@@ -20,25 +20,25 @@ import java.security.Principal;
 @AllArgsConstructor
 public class DeleteGroupHandler implements HandlerFunction<ServerResponse> {
 
-    private final WordsGroupService wordsGroupService;
-    private final WordsGroupWebApiMapper mapper;
+    private final GroupsService groupsService;
+    private final GroupWebApiMapper mapper;
 
     @Override
     public Mono<ServerResponse> handle(ServerRequest request) {
         return request.principal()
                       .map(Principal::getName)
-                      .flatMapMany(userId -> deleteWordsGroup(request, userId))
+                      .flatMapMany(userId -> deleteGroup(request, userId))
                       .collectList()
-                      .map(mapper::toAllWordGroupsResponse)
-                      .flatMap(allWordGroupsResponse -> ServerResponse.ok()
+                      .map(mapper::tGroupListResponse)
+                      .flatMap(allGroupsResponse -> ServerResponse.ok()
                                                                       .contentType(MediaType.APPLICATION_JSON)
-                                                                      .bodyValue(allWordGroupsResponse));
+                                                                      .bodyValue(allGroupsResponse));
     }
 
-    private Flux<WordsGroup> deleteWordsGroup(ServerRequest request, String userId) {
+    private Flux<Group> deleteGroup(ServerRequest request, String userId) {
         var supportedLanguage = extractLanguageCode(request);
         var groupId = request.pathVariable("groupId");
-        return wordsGroupService.deleteWordsGroup(userId, supportedLanguage, groupId);
+        return groupsService.deleteGroup(userId, supportedLanguage, groupId);
     }
 
     private SupportedLanguage extractLanguageCode(ServerRequest request) {

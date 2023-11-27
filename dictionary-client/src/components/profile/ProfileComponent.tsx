@@ -1,4 +1,4 @@
-import {useDictionaryClient} from "../../client/dictionary-client";
+import {useDictionaryClient} from "../../client/learning-items/learning-items-client";
 
 function ProfileComponent() {
     const client = useDictionaryClient();

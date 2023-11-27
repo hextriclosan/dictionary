@@ -5,7 +5,6 @@ import {BrowserRouter} from "react-router-dom";
 import App from "./components/app/App";
 import reportWebVitals from "./reportWebVitals";
 import Home from "./components/home/Home";
-import WordsComponent from "./components/words/WordsComponent";
 import Login from "./components/auth/login/LoginComponent";
 import AuthorizationComponent from "./components/auth/login/AuthorizationComponent";
 import ProfileComponent from "./components/profile/ProfileComponent";
@@ -13,8 +12,9 @@ import RequireAuth from "./components/auth/require-auth";
 import {AuthProvider} from "./components/auth/authentication-helpers";
 import {UserLanguagesComponent} from "./components/languages/UserLanguagesComponent";
 import {CurrentLanguageProvider} from "./context/CurrentLanguageContext";
-import {WordGroupsComponent} from "./components/groups/WordGroupsComponent";
+import {GroupsComponent} from "./components/groups/GroupsComponent";
 import {SingleGroupComponent} from "./components/groups/SingleGroupComponent";
+import LearningItemsComponent from "./components/learning-items/LearningItemsComponent";
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
@@ -32,14 +32,14 @@ root.render(
                                     <ProfileComponent/>
                                 </RequireAuth>
                             }/>
-                            <Route path="/words" element={
+                            <Route path="/learning-items" element={
                                 <RequireAuth>
-                                    <WordsComponent/>
+                                    <LearningItemsComponent/>
                                 </RequireAuth>
                             }/>
                             <Route path="/groups" element={
                                 <RequireAuth>
-                                    <WordGroupsComponent/>
+                                    <GroupsComponent/>
                                 </RequireAuth>
                             }/>
                             <Route path="/groups/:groupId" element={

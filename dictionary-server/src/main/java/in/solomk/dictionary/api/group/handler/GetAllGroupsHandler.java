@@ -1,8 +1,8 @@
 package in.solomk.dictionary.api.group.handler;
 
-import in.solomk.dictionary.api.group.mapper.WordsGroupWebApiMapper;
+import in.solomk.dictionary.api.group.mapper.GroupWebApiMapper;
 import in.solomk.dictionary.exception.BadRequestException;
-import in.solomk.dictionary.service.group.WordsGroupService;
+import in.solomk.dictionary.service.group.GroupsService;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
@@ -18,19 +18,19 @@ import java.security.Principal;
 @AllArgsConstructor
 public class GetAllGroupsHandler implements HandlerFunction<ServerResponse> {
 
-    private final WordsGroupService wordsGroupService;
-    private final WordsGroupWebApiMapper mapper;
+    private final GroupsService groupsService;
+    private final GroupWebApiMapper mapper;
 
     @Override
     public Mono<ServerResponse> handle(ServerRequest request) {
         return request.principal()
                       .map(Principal::getName)
-                      .flatMapMany(userId -> wordsGroupService.getAllUserGroups(userId, extractLanguageCode(request)))
+                      .flatMapMany(userId -> groupsService.getAllUserGroups(userId, extractLanguageCode(request)))
                       .collectList()
-                      .map(mapper::toAllWordGroupsResponse)
-                      .flatMap(allWordGroupsResponse -> ServerResponse.ok()
+                      .map(mapper::tGroupListResponse)
+                      .flatMap(groupListResponse -> ServerResponse.ok()
                                                                       .contentType(MediaType.APPLICATION_JSON)
-                                                                      .bodyValue(allWordGroupsResponse))
+                                                                      .bodyValue(groupListResponse))
                       .switchIfEmpty(ServerResponse.notFound()
                                                    .build());
     }

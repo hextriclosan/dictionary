@@ -1,10 +1,10 @@
 package in.solomk.dictionary.api.group.handler;
 
-import in.solomk.dictionary.api.group.dto.CreateWordsGroupRequest;
+import in.solomk.dictionary.api.group.dto.CreateGroupRequest;
 import in.solomk.dictionary.exception.BadRequestException;
-import in.solomk.dictionary.service.group.WordsGroupService;
-import in.solomk.dictionary.service.group.model.UnsavedWordsGroup;
-import in.solomk.dictionary.service.group.model.WordsGroup;
+import in.solomk.dictionary.service.group.GroupsService;
+import in.solomk.dictionary.service.group.model.Group;
+import in.solomk.dictionary.service.group.model.UnsavedGroup;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import in.solomk.dictionary.service.language.UserLanguagesService;
 import lombok.AllArgsConstructor;
@@ -26,7 +26,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @AllArgsConstructor
 public class CreateGroupHandler implements HandlerFunction<ServerResponse> {
 
-    private final WordsGroupService wordsGroupService;
+    private final GroupsService groupsService;
     private final UserLanguagesService userLanguagesService;
 
     @Override
@@ -34,28 +34,28 @@ public class CreateGroupHandler implements HandlerFunction<ServerResponse> {
         return request.principal()
                       .map(Principal::getName)
                       .flatMap(userId -> createAndValidateStudiedLanguage(request, userId))
-                      .flatMap(langWithWordsGroup ->
-                                       ServerResponse.created(buildCreatedUri(langWithWordsGroup.getT1(),
-                                                                              langWithWordsGroup.getT2()))
+                      .flatMap(langWithGroup ->
+                                       ServerResponse.created(buildCreatedUri(langWithGroup.getT1(),
+                                                                              langWithGroup.getT2()))
                                                      .contentType(APPLICATION_JSON)
-                                                     .bodyValue(langWithWordsGroup.getT2())
+                                                     .bodyValue(langWithGroup.getT2())
                       );
     }
 
-    private Mono<Tuple2<SupportedLanguage, WordsGroup>> createAndValidateStudiedLanguage(ServerRequest request, String userId) {
+    private Mono<Tuple2<SupportedLanguage, Group>> createAndValidateStudiedLanguage(ServerRequest request, String userId) {
         var supportedLanguage = extractLanguageCode(request);
         return userLanguagesService.validateLanguageIsStudied(userId, supportedLanguage)
                                    .then(Mono.zip(Mono.just(supportedLanguage), createGroup(request, userId)));
     }
 
-    private Mono<WordsGroup> createGroup(ServerRequest request, String userId) {
+    private Mono<Group> createGroup(ServerRequest request, String userId) {
         return extractRequestBody(request)
-                .flatMap(createWordsGroupRequest -> wordsGroupService.saveWordsGroup(
-                        userId, extractLanguageCode(request), new UnsavedWordsGroup(createWordsGroupRequest.name())));
+                .flatMap(createGroupRequest -> groupsService.saveGroup(
+                        userId, extractLanguageCode(request), new UnsavedGroup(createGroupRequest.name())));
     }
 
-    private Mono<CreateWordsGroupRequest> extractRequestBody(ServerRequest request) {
-        return request.bodyToMono(CreateWordsGroupRequest.class);
+    private Mono<CreateGroupRequest> extractRequestBody(ServerRequest request) {
+        return request.bodyToMono(CreateGroupRequest.class);
     }
 
     private SupportedLanguage extractLanguageCode(ServerRequest request) {
@@ -64,8 +64,8 @@ public class CreateGroupHandler implements HandlerFunction<ServerResponse> {
                                 .orElseThrow(() -> new BadRequestException("Language code is not supported", languageCode));
     }
 
-    private static URI buildCreatedUri(SupportedLanguage language, WordsGroup wordsGroup) {
-        return URI.create("/api/languages/%s/groups/%s".formatted(language.getLanguageCode(), wordsGroup.id()));
+    private static URI buildCreatedUri(SupportedLanguage language, Group group) {
+        return URI.create("/api/languages/%s/groups/%s".formatted(language.getLanguageCode(), group.id()));
     }
 
 }

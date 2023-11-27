@@ -2,7 +2,7 @@ package in.solomk.dictionary.api.settings.handler;
 
 import in.solomk.dictionary.api.settings.dto.LanguageSettingsResponse;
 import in.solomk.dictionary.api.settings.dto.SupportedLanguageResponse;
-import in.solomk.dictionary.api.word.dto.UserWordsResponse;
+import in.solomk.dictionary.api.learning_item.dto.LearningItemListResponse;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import in.solomk.dictionary.service.settings.LanguageSettingsService;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ public class GetLanguageSettingsHandler implements HandlerFunction<ServerRespons
     private final LanguageSettingsService languageSettingsService;
 
     @Override
-    @RegisterReflectionForBinding(value = UserWordsResponse.class)
+    @RegisterReflectionForBinding(value = LearningItemListResponse.class)
     public Mono<ServerResponse> handle(ServerRequest request) {
         return ServerResponse.ok()
                              .contentType(MediaType.APPLICATION_JSON)

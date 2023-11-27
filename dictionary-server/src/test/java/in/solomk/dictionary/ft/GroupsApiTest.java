@@ -1,12 +1,12 @@
 package in.solomk.dictionary.ft;
 
-import in.solomk.dictionary.api.group.dto.AllWordGroupsResponse;
-import in.solomk.dictionary.api.group.dto.CreateWordsGroupRequest;
-import in.solomk.dictionary.api.group.dto.EditWordsGroupRequest;
-import in.solomk.dictionary.api.group.dto.WordsGroupResponse;
-import in.solomk.dictionary.api.word.dto.CreateWordRequest;
-import in.solomk.dictionary.api.word.dto.WordResponse;
-import in.solomk.dictionary.ft.client.WordGroupsTestClient;
+import in.solomk.dictionary.api.group.dto.CreateGroupRequest;
+import in.solomk.dictionary.api.group.dto.GroupListResponse;
+import in.solomk.dictionary.api.group.dto.EditGroupRequest;
+import in.solomk.dictionary.api.group.dto.GroupResponse;
+import in.solomk.dictionary.api.learning_item.dto.CreateLearningItemRequest;
+import in.solomk.dictionary.api.learning_item.dto.LearningItemResponse;
+import in.solomk.dictionary.ft.client.GroupsTestClient;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,219 +22,219 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GroupsApiTest extends BaseFuncTest {
 
     @Autowired
-    private WordGroupsTestClient wordGroupsTestClient;
+    private GroupsTestClient groupsTestClient;
 
     @Test
-    void returnsEmptyWordGroupsListIfNoWordGroups() {
-        verifyWordGroupsResponse(ENGLISH, new AllWordGroupsResponse(emptyList()));
+    void returnsEmptyGroupListIfNoGroups() {
+        verifyGroupListResponse(ENGLISH, new GroupListResponse(emptyList()));
     }
 
     @Test
-    void createdWordGroup() {
+    void createdGroup() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
 
-        var createdWordsGroup = wordGroupsTestClient
-                .createWordGroup(userToken, ENGLISH.getLanguageCode(), new CreateWordsGroupRequest("group-1"))
+        var createdGroup = groupsTestClient
+                .createGroup(userToken, ENGLISH.getLanguageCode(), new CreateGroupRequest("group-1"))
                 .expectStatus().isCreated()
                 .expectHeader().valueMatches("Location", "/api/languages/en/groups/\\w+")
-                .expectBody(WordsGroupResponse.class)
+                .expectBody(GroupResponse.class)
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(createdWordsGroup)
+        assertThat(createdGroup)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
-                .isEqualTo(new WordsGroupResponse(null, "group-1", null));
-        assertThat(createdWordsGroup.id()).isNotNull();
+                .isEqualTo(new GroupResponse(null, "group-1", null));
+        assertThat(createdGroup.id()).isNotNull();
 
-        verifyWordGroupsResponse(ENGLISH, new AllWordGroupsResponse(List.of(createdWordsGroup)));
+        verifyGroupListResponse(ENGLISH, new GroupListResponse(List.of(createdGroup)));
     }
 
     @Test
     void getsGroupById() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
-        var createdWordsGroup = wordGroupsTestClient
-                .createWordGroup(userToken, ENGLISH.getLanguageCode(), new CreateWordsGroupRequest("group-1"))
+        var createdGroup = groupsTestClient
+                .createGroup(userToken, ENGLISH.getLanguageCode(), new CreateGroupRequest("group-1"))
                 .expectStatus().isCreated()
-                .expectBody(WordsGroupResponse.class)
+                .expectBody(GroupResponse.class)
                 .returnResult()
                 .getResponseBody();
 
-        var requestedGroup = wordGroupsTestClient.getGroup(userToken, ENGLISH.getLanguageCode(), createdWordsGroup.id());
+        var requestedGroup = groupsTestClient.getGroup(userToken, ENGLISH.getLanguageCode(), createdGroup.id());
 
         assertThat(requestedGroup)
-                .isEqualTo(createdWordsGroup);
+                .isEqualTo(createdGroup);
     }
 
     @Test
     void returnsBadRequestIfLanguageIsNotStudied() {
-        wordGroupsTestClient.createWordGroup(userToken, "ua", new CreateWordsGroupRequest("group-1"))
-                            .expectStatus()
-                            .isBadRequest()
-                            .expectBody()
-                            .json("""
+        groupsTestClient.createGroup(userToken, "ua", new CreateGroupRequest("group-1"))
+                        .expectStatus()
+                        .isBadRequest()
+                        .expectBody()
+                        .json("""
                                           {
                                               "path": "/api/languages/ua/groups",
                                               "status": 400,
                                               "message": "Language code is not supported"
                                           }
                                           """)
-                            .jsonPath("$.requestId").isNotEmpty();
+                        .jsonPath("$.requestId").isNotEmpty();
     }
 
     @Test
-    void addsWordGroupsFromDifferentLanguages() {
+    void addsGroupsFromDifferentLanguages() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
         userLanguagesTestClient.addLanguage(userToken, UKRAINIAN.getLanguageCode());
 
-        var createdWordsGroup = wordGroupsTestClient
-                .createWordGroup(userToken, ENGLISH.getLanguageCode(), new CreateWordsGroupRequest("group-1"))
+        var createdGroup = groupsTestClient
+                .createGroup(userToken, ENGLISH.getLanguageCode(), new CreateGroupRequest("group-1"))
                 .expectStatus().isCreated()
                 .expectHeader().valueMatches("Location", "/api/languages/en/groups/\\w+")
-                .expectBody(WordsGroupResponse.class)
+                .expectBody(GroupResponse.class)
                 .returnResult()
                 .getResponseBody();
-        var createdWordsGroupUa = wordGroupsTestClient
-                .createWordGroup(userToken, UKRAINIAN.getLanguageCode(), new CreateWordsGroupRequest("group-1"))
+        var createdGroupUa = groupsTestClient
+                .createGroup(userToken, UKRAINIAN.getLanguageCode(), new CreateGroupRequest("group-1"))
                 .expectStatus().isCreated()
                 .expectHeader().valueMatches("Location", "/api/languages/uk/groups/\\w+")
-                .expectBody(WordsGroupResponse.class)
+                .expectBody(GroupResponse.class)
                 .returnResult()
                 .getResponseBody();
 
-        verifyWordGroupsResponse(ENGLISH, new AllWordGroupsResponse(List.of(createdWordsGroup)));
-        verifyWordGroupsResponse(UKRAINIAN, new AllWordGroupsResponse(List.of(createdWordsGroupUa)));
+        verifyGroupListResponse(ENGLISH, new GroupListResponse(List.of(createdGroup)));
+        verifyGroupListResponse(UKRAINIAN, new GroupListResponse(List.of(createdGroupUa)));
     }
 
     @Test
-    void deletesWordsGroupById() {
+    void deletesGroupById() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
-        var createdWordsGroup1 = wordGroupsTestClient
-                .createWordGroup(userToken, ENGLISH.getLanguageCode(), new CreateWordsGroupRequest("group-1"))
-                .expectBody(WordsGroupResponse.class)
+        var createdGroup1 = groupsTestClient
+                .createGroup(userToken, ENGLISH.getLanguageCode(), new CreateGroupRequest("group-1"))
+                .expectBody(GroupResponse.class)
                 .returnResult()
                 .getResponseBody();
-        var createdWordsGroup2 = wordGroupsTestClient
-                .createWordGroup(userToken, ENGLISH.getLanguageCode(), new CreateWordsGroupRequest("group-1"))
-                .expectBody(WordsGroupResponse.class)
+        var createdGroup2 = groupsTestClient
+                .createGroup(userToken, ENGLISH.getLanguageCode(), new CreateGroupRequest("group-1"))
+                .expectBody(GroupResponse.class)
                 .returnResult()
                 .getResponseBody();
-        verifyWordGroupsResponse(ENGLISH, new AllWordGroupsResponse(List.of(createdWordsGroup1, createdWordsGroup2)));
+        verifyGroupListResponse(ENGLISH, new GroupListResponse(List.of(createdGroup1, createdGroup2)));
 
-        wordGroupsTestClient.deleteWordGroup(userToken, ENGLISH.getLanguageCode(), createdWordsGroup1.id())
-                            .expectStatus().isOk()
-                            .expectBody(AllWordGroupsResponse.class)
-                            .isEqualTo(new AllWordGroupsResponse(List.of(createdWordsGroup2)));
+        groupsTestClient.deleteGroup(userToken, ENGLISH.getLanguageCode(), createdGroup1.id())
+                        .expectStatus().isOk()
+                        .expectBody(GroupListResponse.class)
+                        .isEqualTo(new GroupListResponse(List.of(createdGroup2)));
 
-        verifyWordGroupsResponse(ENGLISH, new AllWordGroupsResponse(List.of(createdWordsGroup2)));
+        verifyGroupListResponse(ENGLISH, new GroupListResponse(List.of(createdGroup2)));
     }
 
     @Test
     void returnsGroupsInOrderOfCreation() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
 
-        var createdWordsGroup1 = wordGroupsTestClient
-                .createWordGroup(userToken, ENGLISH.getLanguageCode(), new CreateWordsGroupRequest("y-group"))
-                .expectBody(WordsGroupResponse.class)
+        var createdGroup1 = groupsTestClient
+                .createGroup(userToken, ENGLISH.getLanguageCode(), new CreateGroupRequest("y-group"))
+                .expectBody(GroupResponse.class)
                 .returnResult()
                 .getResponseBody();
-        var createdWordsGroup2 = wordGroupsTestClient
-                .createWordGroup(userToken, ENGLISH.getLanguageCode(), new CreateWordsGroupRequest("x-group"))
-                .expectBody(WordsGroupResponse.class)
+        var createdGroup2 = groupsTestClient
+                .createGroup(userToken, ENGLISH.getLanguageCode(), new CreateGroupRequest("x-group"))
+                .expectBody(GroupResponse.class)
                 .returnResult()
                 .getResponseBody();
 
-        verifyWordGroupsResponse(ENGLISH, new AllWordGroupsResponse(List.of(createdWordsGroup1, createdWordsGroup2)));
+        verifyGroupListResponse(ENGLISH, new GroupListResponse(List.of(createdGroup1, createdGroup2)));
     }
 
     @Test
-    void editsWordsGroup() {
+    void editsGroup() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
-        var createdWordsGroup = wordGroupsTestClient
-                .createWordGroup(userToken, ENGLISH.getLanguageCode(), new CreateWordsGroupRequest("group-1"))
-                .expectBody(WordsGroupResponse.class)
+        var createdGroup = groupsTestClient
+                .createGroup(userToken, ENGLISH.getLanguageCode(), new CreateGroupRequest("group-1"))
+                .expectBody(GroupResponse.class)
                 .returnResult()
                 .getResponseBody();
 
-        var editedWordsGroup = wordGroupsTestClient
-                .editWordGroup(userToken, ENGLISH.getLanguageCode(), createdWordsGroup.id(), new EditWordsGroupRequest("group-1-edited", emptyList()))
+        var editedGroup = groupsTestClient
+                .editGroup(userToken, ENGLISH.getLanguageCode(), createdGroup.id(), new EditGroupRequest("group-1-edited", emptyList()))
                 .expectStatus().isOk()
-                .expectBody(WordsGroupResponse.class)
+                .expectBody(GroupResponse.class)
                 .returnResult()
                 .getResponseBody();
-        assertThat(editedWordsGroup)
-                .isEqualTo(new WordsGroupResponse(createdWordsGroup.id(), "group-1-edited", null));
+        assertThat(editedGroup)
+                .isEqualTo(new GroupResponse(createdGroup.id(), "group-1-edited", null));
 
-        verifyWordGroupsResponse(ENGLISH, new AllWordGroupsResponse(List.of(editedWordsGroup)));
+        verifyGroupListResponse(ENGLISH, new GroupListResponse(List.of(editedGroup)));
     }
 
     @Test
-    void addsWordToWordGroup() {
-        // todo: should handle if no word id
+    void addsLearningItemToGroup() {
+        // todo: should handle if no LearningItem id
         // todo: should handle if no group id
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
-        var group = wordGroupsTestClient
-                .createWordGroup(userToken, ENGLISH.getLanguageCode(), new CreateWordsGroupRequest("group-1"))
-                .expectBody(WordsGroupResponse.class)
+        var group = groupsTestClient
+                .createGroup(userToken, ENGLISH.getLanguageCode(), new CreateGroupRequest("group-1"))
+                .expectBody(GroupResponse.class)
                 .returnResult()
                 .getResponseBody();
-        var word = wordsTestClient.addWord(userToken, ENGLISH.getLanguageCode(),
-                                           new CreateWordRequest("word-1", "meaning-1"))
-                                  .expectBody(WordResponse.class)
-                                  .returnResult()
-                                  .getResponseBody();
+        var learningItem = learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(),
+                                                           new CreateLearningItemRequest("learningItem-1", "meaning-1"))
+                                          .expectBody(LearningItemResponse.class)
+                                          .returnResult()
+                                          .getResponseBody();
 
-        wordGroupsTestClient.addWordToGroup(userToken, ENGLISH.getLanguageCode(), group.id(), word.id())
-                            .expectStatus().isOk()
-                            .expectBody().isEmpty();
+        groupsTestClient.addLearningItemToGroup(userToken, ENGLISH.getLanguageCode(), group.id(), learningItem.id())
+                        .expectStatus().isOk()
+                        .expectBody().isEmpty();
 
-        group = wordGroupsTestClient.getGroup(userToken, ENGLISH.getLanguageCode(), group.id());
-        word = wordsTestClient.getWordSpec(userToken, ENGLISH.getLanguageCode(), word.id())
-                              .expectStatus().isOk()
-                              .expectBody(WordResponse.class)
-                              .returnResult()
-                              .getResponseBody();
+        group = groupsTestClient.getGroup(userToken, ENGLISH.getLanguageCode(), group.id());
+        learningItem = learningItemsTestClient.getLearningItemSpec(userToken, ENGLISH.getLanguageCode(), learningItem.id())
+                                      .expectStatus().isOk()
+                                      .expectBody(LearningItemResponse.class)
+                                      .returnResult()
+                                      .getResponseBody();
 
-        assertThat(group.wordIds())
-                .containsOnly(word.id());
-        assertThat(word.groupIds())
+        assertThat(group.learningItemIds())
+                .containsOnly(learningItem.id());
+        assertThat(learningItem.groupIds())
                 .containsOnly(group.id());
     }
 
     @Test
-    void removedWordFromGroup() {
+    void removesLearningItemFromGroup() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
-        var group = wordGroupsTestClient
-                .createWordGroup(userToken, ENGLISH.getLanguageCode(), new CreateWordsGroupRequest("group-1"))
-                .expectBody(WordsGroupResponse.class)
+        var group = groupsTestClient
+                .createGroup(userToken, ENGLISH.getLanguageCode(), new CreateGroupRequest("group-1"))
+                .expectBody(GroupResponse.class)
                 .returnResult()
                 .getResponseBody();
-        var word = wordsTestClient.addWord(userToken, ENGLISH.getLanguageCode(),
-                                           new CreateWordRequest("word-1", "meaning-1"))
-                                  .expectBody(WordResponse.class)
-                                  .returnResult()
-                                  .getResponseBody();
-        wordGroupsTestClient.addWordToGroup(userToken, ENGLISH.getLanguageCode(), group.id(), word.id())
-                            .expectStatus().isOk();
+        var learningItem = learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(),
+                                                           new CreateLearningItemRequest("learningItem-1", "meaning-1"))
+                                          .expectBody(LearningItemResponse.class)
+                                          .returnResult()
+                                          .getResponseBody();
+        groupsTestClient.addLearningItemToGroup(userToken, ENGLISH.getLanguageCode(), group.id(), learningItem.id())
+                        .expectStatus().isOk();
 
-        wordGroupsTestClient.deleteWordFromGroup(userToken, ENGLISH.getLanguageCode(), group.id(), word.id())
-                            .expectStatus().isOk()
-                            .expectBody().isEmpty();
+        groupsTestClient.deleteLearningItemFromGroup(userToken, ENGLISH.getLanguageCode(), group.id(), learningItem.id())
+                        .expectStatus().isOk()
+                        .expectBody().isEmpty();
 
-        group = wordGroupsTestClient.getGroup(userToken, ENGLISH.getLanguageCode(), group.id());
-        word = wordsTestClient.getWord(userToken, ENGLISH.getLanguageCode(), word.id());
+        group = groupsTestClient.getGroup(userToken, ENGLISH.getLanguageCode(), group.id());
+        learningItem = learningItemsTestClient.getLearningItem(userToken, ENGLISH.getLanguageCode(), learningItem.id());
 
-        assertThat(group.wordIds())
+        assertThat(group.learningItemIds())
                 .isEmpty();
-        assertThat(word.groupIds())
+        assertThat(learningItem.groupIds())
                 .isEmpty();
     }
 
-    private void verifyWordGroupsResponse(SupportedLanguage language, AllWordGroupsResponse expectedResponse) {
-        wordGroupsTestClient.getAllWordGroups(userToken, language.getLanguageCode())
-                            .expectStatus().isOk()
-                            .expectBody(AllWordGroupsResponse.class)
-                            .isEqualTo(expectedResponse);
+    private void verifyGroupListResponse(SupportedLanguage language, GroupListResponse expectedResponse) {
+        groupsTestClient.getAllGroups(userToken, language.getLanguageCode())
+                        .expectStatus().isOk()
+                        .expectBody(GroupListResponse.class)
+                        .isEqualTo(expectedResponse);
     }
 
 }

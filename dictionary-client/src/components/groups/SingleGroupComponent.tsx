@@ -1,11 +1,11 @@
 import {useGroupsClient} from "../../client/groups/groups-client";
 import useCurrentLanguage from "../../context/CurrentLanguageContext";
-import {Word} from "../../client/model/word";
+import {LearningItem} from "../../client/model/learning-item";
 import {useEffect, useState} from "react";
-import {useDictionaryClient} from "../../client/dictionary-client";
 import {Group} from "../../client/groups/group";
 import {useParams} from "react-router";
-import {AddWordToGroupComponent} from "./AddWordToGroupComponent";
+import {AddLearningItemToGroupComponent} from "./AddLearningItemToGroupComponent";
+import {useDictionaryClient} from "../../client/learning-items/learning-items-client";
 
 
 export function SingleGroupComponent() {
@@ -15,7 +15,7 @@ export function SingleGroupComponent() {
     const dictionaryClient = useDictionaryClient();
 
     const [group, setGroup] = useState<Group | undefined>(undefined);
-    const [words, setWords] = useState<Word[]>([]);
+    const [learningItems, setLearningItems] = useState<LearningItem[]>([]);
 
     useEffect(() => {
         console.log("SingleGroupComponent init", currentLanguageContext);
@@ -30,15 +30,15 @@ export function SingleGroupComponent() {
             setGroup(fetchedGroup);
 
             // todo: make one batch request / search query
-            const wordMapping: Map<string, Word> = new Map<string, Word>();
-            const wordIds = fetchedGroup.wordIds ?? [];
-            await Promise.all(wordIds.map(async (wordId) => {
-                const word = await dictionaryClient.getWord(currentLanguageContext.currentLanguage!, wordId);
-                wordMapping.set(word.id, word);
+            const learningItemMapping: Map<string, LearningItem> = new Map<string, LearningItem>();
+            const learningItemIds = fetchedGroup.learningItemIds ?? [];
+            await Promise.all(learningItemIds.map(async (learningItemId) => {
+                const learningItem = await dictionaryClient.getLearningItem(currentLanguageContext.currentLanguage!, learningItemId);
+                learningItemMapping.set(learningItem.id, learningItem);
             }));
 
-            setWords((fetchedGroup.wordIds ?? []).map(wordId => wordMapping.get(wordId))
-                .filter(w => w !== undefined) as Word[]);
+            setLearningItems((fetchedGroup.learningItemIds ?? []).map(learningItemId => learningItemMapping.get(learningItemId))
+                .filter(w => w !== undefined) as LearningItem[]);
         }
 
         fetchData()
@@ -52,24 +52,24 @@ export function SingleGroupComponent() {
         </div>
     }
 
-    async function handleWordRemoval(word: Word) {
-        await groupsClient.removeWordFromGroup(currentLanguageContext.currentLanguage!, group?.id!, word.id);
-        setWords(words.filter(w => w.id !== word.id));
+    async function handleLearningItemRemoval(learningItem: LearningItem) {
+        await groupsClient.removeLearningItemFromGroup(currentLanguageContext.currentLanguage!, group?.id!, learningItem.id);
+        setLearningItems(learningItems.filter(w => w.id !== learningItem.id));
     }
 
     return (
         <div hidden={!group}>
             <h1>Group {group?.name}</h1>
-            <div>Words</div>
+            <div>Learning Items</div>
             <ul>
-                {words.map(w =>
-                    <li key={w.id}>{w.wordText}<button onClick={() => handleWordRemoval(w)}>Remove</button></li>
+                {learningItems.map(w =>
+                    <li key={w.id}>{w.text}<button onClick={() => handleLearningItemRemoval(w)}>Remove</button></li>
                 )}
             </ul>
-            <AddWordToGroupComponent
+            <AddLearningItemToGroupComponent
                 groupId={group?.id!}
-                existingGroupWords={group?.wordIds ?? []}
-                onWordAdded={(word) => setWords([...words, word])}
+                existingGroupLearningItems={group?.learningItemIds ?? []}
+                onLearningItemAdded={(learningItem) => setLearningItems([...learningItems, learningItem])}
             />
         </div>
     );

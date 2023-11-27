@@ -2,7 +2,7 @@ package in.solomk.dictionary.api.language.handler;
 
 import in.solomk.dictionary.api.language.dto.LearningLanguagesAggregatedResponse;
 import in.solomk.dictionary.api.language.mapper.LearningLanguagesWebApiMapper;
-import in.solomk.dictionary.api.word.dto.WordResponse;
+import in.solomk.dictionary.api.learning_item.dto.LearningItemResponse;
 import in.solomk.dictionary.service.language.UserLanguagesService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class AddLanguageHandler implements HandlerFunction<ServerResponse> {
     private final LearningLanguagesWebApiMapper mapper;
 
     @Override
-    @RegisterReflectionForBinding(value = WordResponse.class)
+    @RegisterReflectionForBinding(value = LearningItemResponse.class)
     public Mono<ServerResponse> handle(ServerRequest request) {
         return request.principal()
                       .map(Principal::getName)

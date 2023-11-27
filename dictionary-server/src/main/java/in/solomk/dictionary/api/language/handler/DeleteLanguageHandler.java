@@ -2,12 +2,12 @@ package in.solomk.dictionary.api.language.handler;
 
 import in.solomk.dictionary.api.language.dto.LearningLanguagesAggregatedResponse;
 import in.solomk.dictionary.api.language.mapper.LearningLanguagesWebApiMapper;
-import in.solomk.dictionary.api.word.dto.WordResponse;
+import in.solomk.dictionary.api.learning_item.dto.LearningItemResponse;
 import in.solomk.dictionary.exception.BadRequestException;
-import in.solomk.dictionary.service.group.WordsGroupService;
+import in.solomk.dictionary.service.group.GroupsService;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import in.solomk.dictionary.service.language.UserLanguagesService;
-import in.solomk.dictionary.service.words.UsersWordsService;
+import in.solomk.dictionary.service.learning_items.LearningItemsService;
 import lombok.AllArgsConstructor;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.stereotype.Component;
@@ -25,28 +25,28 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class DeleteLanguageHandler implements HandlerFunction<ServerResponse> {
 
     private final UserLanguagesService userLanguagesService;
-    private final UsersWordsService usersWordsService;
-    private final WordsGroupService wordsGroupService;
+    private final LearningItemsService learningItemsService;
+    private final GroupsService groupsService;
     private final LearningLanguagesWebApiMapper mapper;
 
     @Override
-    @RegisterReflectionForBinding(value = WordResponse.class)
+    @RegisterReflectionForBinding(value = LearningItemResponse.class)
     public Mono<ServerResponse> handle(ServerRequest request) {
         return request.principal()
                       .map(Principal::getName)
                       .flatMap(userId -> ServerResponse.ok()
                                                        .contentType(APPLICATION_JSON)
-                                                       .body(deleteLanguageAndWordsAndGroups(request, userId),
+                                                       .body(deleteLanguageAndLearningItemsAndGroups(request, userId),
                                                              LearningLanguagesAggregatedResponse.class));
     }
 
     // Should be transactional
-    private Mono<LearningLanguagesAggregatedResponse> deleteLanguageAndWordsAndGroups(ServerRequest request, String userId) {
+    private Mono<LearningLanguagesAggregatedResponse> deleteLanguageAndLearningItemsAndGroups(ServerRequest request, String userId) {
         var supportedLanguage = getSafeLanguage(request.pathVariable("languageCode"));
-        return usersWordsService.deleteAllUserWords(userId, supportedLanguage)
-                                .then(wordsGroupService.deleteAllUserGroups(userId, supportedLanguage.getLanguageCode()))
-                                .then(userLanguagesService.deleteLearningLanguage(userId, supportedLanguage))
-                                .map(mapper::toLearningLanguagesAggregatedResponse);
+        return learningItemsService.deleteAllUserLearningItems(userId, supportedLanguage)
+                                   .then(groupsService.deleteAllUserGroups(userId, supportedLanguage.getLanguageCode()))
+                                   .then(userLanguagesService.deleteLearningLanguage(userId, supportedLanguage))
+                                   .map(mapper::toLearningLanguagesAggregatedResponse);
     }
 
 

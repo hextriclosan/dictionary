@@ -1,7 +1,7 @@
 package in.solomk.dictionary.api.language.handler;
 
 import in.solomk.dictionary.api.language.mapper.LearningLanguagesWebApiMapper;
-import in.solomk.dictionary.api.word.dto.UserWordsResponse;
+import in.solomk.dictionary.api.learning_item.dto.LearningItemListResponse;
 import in.solomk.dictionary.service.language.UserLanguagesService;
 import lombok.AllArgsConstructor;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
@@ -22,7 +22,7 @@ public class GetLanguagesHandler implements HandlerFunction<ServerResponse> {
     private final LearningLanguagesWebApiMapper mapper;
 
     @Override
-    @RegisterReflectionForBinding(value = UserWordsResponse.class)
+    @RegisterReflectionForBinding(value = LearningItemListResponse.class)
     public Mono<ServerResponse> handle(ServerRequest request) {
         return request.principal()
                 .map(Principal::getName)

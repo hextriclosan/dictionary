@@ -38,7 +38,7 @@ function App() {
                     paddingBottom: "1rem",
                 }}>
                     <Link to={routing.HOME}>Home</Link> | {" "}
-                    <Link to="/words">Words</Link> | {" "}
+                    <Link to="/learning-items">Learning Items</Link> | {" "}
                     <Link to="/groups">Groups</Link> | {" "}
                     <Link to="/languages">Languages</Link> | {" "}
                     <Link to="/profile">Profile</Link> | {" "}

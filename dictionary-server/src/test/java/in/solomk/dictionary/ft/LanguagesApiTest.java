@@ -2,7 +2,7 @@ package in.solomk.dictionary.ft;
 
 import in.solomk.dictionary.api.language.dto.LearningLanguageResponse;
 import in.solomk.dictionary.api.language.dto.LearningLanguagesAggregatedResponse;
-import in.solomk.dictionary.api.word.dto.CreateWordRequest;
+import in.solomk.dictionary.api.learning_item.dto.CreateLearningItemRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -50,21 +50,30 @@ public class LanguagesApiTest extends BaseFuncTest {
     }
 
     @Test
-    void removesLanguageWithAllRelatedWords() {
+    void removesLanguageWithAllRelatedLearningItemsAndGroups() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
-        wordsTestClient.addWord(userToken, ENGLISH.getLanguageCode(), new CreateWordRequest("word-1", "meaning-1"));
+        learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(), new CreateLearningItemRequest("learningItem-1", "meaning-1"));
 
         userLanguagesTestClient.deleteLanguage(userToken, ENGLISH.getLanguageCode())
                                .expectStatus()
                                .isOk();
-        wordsTestClient.getUserWords(userToken, ENGLISH.getLanguageCode())
-                       .expectStatus()
-                       .isOk()
-                       .expectBody()
-                       .json("""
-                                         {
-                                           "words": []
-                                         }""", true);
+        learningItemsTestClient.getLearningItems(userToken, ENGLISH.getLanguageCode())
+                               .expectStatus()
+                               .isOk()
+                               .expectBody()
+                               .json("""
+                                             {
+                                               "learningItems": []
+                                             }""", true);
+        groupsTestClient.getAllGroups(userToken, ENGLISH.getLanguageCode())
+                        .expectStatus()
+                        .isOk()
+                        .expectBody()
+                        .json("""
+                                      {
+                                        "groups": []
+                                      }""", true);
+
     }
 
     private void verifyUserLanguagesResponse(LearningLanguagesAggregatedResponse expectedValue) {

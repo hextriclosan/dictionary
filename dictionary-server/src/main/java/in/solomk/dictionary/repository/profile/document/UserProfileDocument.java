@@ -1,8 +1,11 @@
 package in.solomk.dictionary.repository.profile.document;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.List;
 import java.util.Set;
 
+@Document(collection = "user_profiles")
 public record UserProfileDocument(
         String id,
         String name,

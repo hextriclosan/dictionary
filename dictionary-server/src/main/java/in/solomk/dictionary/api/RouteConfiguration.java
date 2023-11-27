@@ -37,13 +37,13 @@ public class RouteConfiguration {
             RouterFunction<ServerResponse> profileRoute,
             RouterFunction<ServerResponse> settingsRoute,
             RouterFunction<ServerResponse> languagesRoute,
-            RouterFunction<ServerResponse> wordsRoute,
-            RouterFunction<ServerResponse> wordsGroupRoute) {
+            RouterFunction<ServerResponse> learningItemsRoute,
+            RouterFunction<ServerResponse> groupsRoute) {
         return RouterFunctions.route()
                               .nest(path("/api/settings"), () -> settingsRoute)
                               .nest(path("/api/languages"), () -> languagesRoute)
-                              .nest(path("/api/languages/{languageCode}/words"), () -> wordsRoute)
-                              .nest(path("/api/languages/{languageCode}/groups"), () -> wordsGroupRoute)
+                              .nest(path("/api/languages/{languageCode}/learning-items"), () -> learningItemsRoute)
+                              .nest(path("/api/languages/{languageCode}/groups"), () -> groupsRoute)
                               .nest(path("/api/me"), () -> profileRoute)
                               .build();
     }
