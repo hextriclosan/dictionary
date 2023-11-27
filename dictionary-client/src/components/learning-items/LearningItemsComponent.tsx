@@ -8,7 +8,7 @@ import "./LearningItemsComponent.css";
 import {DeleteOutlined, MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
 import {useDictionaryClient} from "../../client/learning-items/learning-items-client";
 
-const {Title, Text} = Typography;
+const {Title} = Typography;
 
 const EditableContext = React.createContext<FormInstance<any> | null>(null);
 
@@ -225,8 +225,6 @@ function LearningItemsComponent() {
             key: 'translation',
             editable: true,
             render: (_, learningItem: LearningItem) => {
-                const translation = learningItem?.definitions?.map((definition) => definition.translation)?.join(", ") ?? ""
-                // return translation;
                 return <List
                     itemLayout="horizontal"
                     dataSource={learningItem.definitions}
