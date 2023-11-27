@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import useCurrentLanguage from "../../context/CurrentLanguageContext";
 import {LearningItem} from "../../client/model/learning-item";
 import {Button} from "antd";
-import {UnsavedLearningItem} from "../../client/model/unsaved-learning-item";
 import {useDictionaryClient} from "../../client/learning-items/learning-items-client";
 
 interface AddLearningItemComponentProps {
@@ -22,7 +21,14 @@ function AddLearningItemComponent(props: AddLearningItemComponentProps) {
         client
             .addLearningItem(
                 currentLanguageContext.currentLanguage!,
-                new UnsavedLearningItem(text, translation)
+                {
+                    text: text,
+                    definitions: [
+                        {
+                            translation: translation
+                        }
+                    ]
+                }
             )
             .then((learningItem) => props.onLearningItemAdded(learningItem));
         setShowAddLearningItemInput(false);
@@ -51,7 +57,7 @@ function AddLearningItemComponent(props: AddLearningItemComponentProps) {
     }, []);
 
     if (!showAddLearningItemInput) {
-        return <Button onClick={() => setShowAddLearningItemInput(true)} type="primary" style={{ marginBottom: 16 }}>
+        return <Button onClick={() => setShowAddLearningItemInput(true)} type="primary" style={{marginBottom: 16}}>
             Add learning item
         </Button>
     }
@@ -79,8 +85,9 @@ function AddLearningItemComponent(props: AddLearningItemComponentProps) {
             />
         </div>
         <div>
-            <Button onClick={onAddLearningItem} type="primary" style={{ marginBottom: 16 }}>Add Learning Item</Button>
-            <Button onClick={() => setShowAddLearningItemInput(false)} type="default" style={{ marginBottom: 16 }}>Cancel</Button>
+            <Button onClick={onAddLearningItem} type="primary" style={{marginBottom: 16}}>Add Learning Item</Button>
+            <Button onClick={() => setShowAddLearningItemInput(false)} type="default"
+                    style={{marginBottom: 16}}>Cancel</Button>
         </div>
     </div>
 }

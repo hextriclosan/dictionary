@@ -1,9 +1,8 @@
-export class UnsavedLearningItem {
-    public readonly text: string;
-    public readonly translation: string;
+import {ItemDefinition} from "./item-definition";
 
-    constructor(text: string, translation: string) {
-        this.text = text;
-        this.translation = translation;
-    }
+export interface UnsavedLearningItem {
+    text: string;
+    comment?: string;
+    imageUrl?: string;
+    definitions: ItemDefinition[];
 }

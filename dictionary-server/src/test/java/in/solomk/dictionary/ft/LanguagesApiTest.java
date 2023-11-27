@@ -3,6 +3,8 @@ package in.solomk.dictionary.ft;
 import in.solomk.dictionary.api.language.dto.LearningLanguageResponse;
 import in.solomk.dictionary.api.language.dto.LearningLanguagesAggregatedResponse;
 import in.solomk.dictionary.api.learning_item.dto.CreateLearningItemRequest;
+import in.solomk.dictionary.api.learning_item.dto.ItemDefinitionWebDto;
+import in.solomk.dictionary.ft.fixture.LearningItemFixture;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -52,7 +54,11 @@ public class LanguagesApiTest extends BaseFuncTest {
     @Test
     void removesLanguageWithAllRelatedLearningItemsAndGroups() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
-        learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(), new CreateLearningItemRequest("learningItem-1", "meaning-1"));
+
+        learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(),
+                                                LearningItemFixture.buildCreateRequest())
+                               .expectStatus()
+                               .isOk();
 
         userLanguagesTestClient.deleteLanguage(userToken, ENGLISH.getLanguageCode())
                                .expectStatus()

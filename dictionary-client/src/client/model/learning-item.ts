@@ -1,6 +1,10 @@
+import {ItemDefinition} from "./item-definition";
+
 export interface LearningItem {
     id: string;
     text: string;
-    translation: string;
-    groupIds: string[];
+    comment?: string;
+    imageUrl?: string;
+    definitions?: ItemDefinition[];
+    groupIds?: string[];
 }

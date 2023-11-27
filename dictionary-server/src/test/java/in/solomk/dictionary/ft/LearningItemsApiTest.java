@@ -1,9 +1,8 @@
 package in.solomk.dictionary.ft;
 
-import in.solomk.dictionary.api.learning_item.dto.CreateLearningItemRequest;
-import in.solomk.dictionary.api.learning_item.dto.EditLearningItemRequest;
-import in.solomk.dictionary.api.learning_item.dto.LearningItemResponse;
 import in.solomk.dictionary.api.learning_item.dto.LearningItemListResponse;
+import in.solomk.dictionary.api.learning_item.dto.LearningItemResponse;
+import in.solomk.dictionary.ft.fixture.LearningItemFixture;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import org.junit.jupiter.api.Test;
 
@@ -25,8 +24,7 @@ public class LearningItemsApiTest extends BaseFuncTest {
     @Test
     void addsLearningItemForUser() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
-        var request = new CreateLearningItemRequest("learningItem-1", "meaning-1");
-        LearningItemResponse learningItemResponse = learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(), request)
+        LearningItemResponse learningItemResponse = learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(), LearningItemFixture.buildCreateRequest())
                                                                            .expectStatus().isOk()
                                                                            .expectBody(LearningItemResponse.class)
                                                                            .returnResult()
@@ -35,7 +33,7 @@ public class LearningItemsApiTest extends BaseFuncTest {
         assertThat(learningItemResponse)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
-                .isEqualTo(new LearningItemResponse(null, "learningItem-1", "meaning-1", null));
+                .isEqualTo(LearningItemFixture.buildResponse());
         assertThat(learningItemResponse.id()).isNotBlank();
 
         verifyLearningItemListResponse(ENGLISH, new LearningItemListResponse(List.of(learningItemResponse)));
@@ -45,56 +43,57 @@ public class LearningItemsApiTest extends BaseFuncTest {
     void getsLearningItemById() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
         var createdLearningItemResponse = learningItemsTestClient
-                .addLearningItem(userToken, ENGLISH.getLanguageCode(), new CreateLearningItemRequest("learningItem-1", "meaning-1"))
+                .addLearningItem(userToken, ENGLISH.getLanguageCode(), LearningItemFixture.buildCreateRequest())
                 .expectStatus().isOk()
                 .expectBody(LearningItemResponse.class)
                 .returnResult()
                 .getResponseBody();
 
         var requestedLearningItem = learningItemsTestClient.getLearningItemSpec(userToken, ENGLISH.getLanguageCode(), createdLearningItemResponse.id())
-                                                   .expectStatus().isOk()
-                                                   .expectBody(LearningItemResponse.class)
-                                                   .returnResult()
-                                                   .getResponseBody();
+                                                           .expectStatus().isOk()
+                                                           .expectBody(LearningItemResponse.class)
+                                                           .returnResult()
+                                                           .getResponseBody();
         assertThat(requestedLearningItem)
                 .isEqualTo(createdLearningItemResponse);
     }
 
     @Test
     void returnsBadRequestIfLanguageIsNotSupported() {
-        var request = new CreateLearningItemRequest("learningItem-1", "meaning-1");
-        learningItemsTestClient.addLearningItem(userToken, "xxx", request)
+        learningItemsTestClient.addLearningItem(userToken, "xxx", LearningItemFixture.buildCreateRequest())
                                .expectStatus()
                                .isBadRequest()
                                .expectBody()
                                .json("""
-                                         {
-                                           "path": "/api/languages/xxx/learning-items",
-                                           "status": 400,
-                                           "error": "Bad Request",
-                                           "message": "Language code is not supported"
-                                         }""")
+                                             {
+                                               "path": "/api/languages/xxx/learning-items",
+                                               "status": 400,
+                                               "error": "Bad Request",
+                                               "message": "Language code is not supported"
+                                             }""")
                                .jsonPath("$.requestId").isNotEmpty();
     }
 
     @Test
     void addsLearningItemsFromDifferentLanguages() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
-        LearningItemResponse learningItemResponse = learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(),
-                                                                                            new CreateLearningItemRequest("learningItem-1", "meaning-1"))
-                                                                           .expectStatus().isOk()
-                                                                           .expectBody(LearningItemResponse.class)
-                                                                           .returnResult()
-                                                                           .getResponseBody();
+        var learningItemResponse = learningItemsTestClient.addLearningItem(
+                                                                  userToken, ENGLISH.getLanguageCode(),
+                                                                  LearningItemFixture.buildCreateRequest())
+                                                          .expectStatus().isOk()
+                                                          .expectBody(LearningItemResponse.class)
+                                                          .returnResult()
+                                                          .getResponseBody();
         verifyLearningItemListResponse(ENGLISH, new LearningItemListResponse(List.of(learningItemResponse)));
 
         userLanguagesTestClient.addLanguage(userToken, UKRAINIAN.getLanguageCode());
-        LearningItemResponse learningItemResponse2 = learningItemsTestClient.addLearningItem(userToken, UKRAINIAN.getLanguageCode(),
-                                                                                             new CreateLearningItemRequest("слава", "glory"))
-                                                                            .expectStatus().isOk()
-                                                                            .expectBody(LearningItemResponse.class)
-                                                                            .returnResult()
-                                                                            .getResponseBody();
+        var learningItemResponse2 = learningItemsTestClient.addLearningItem(
+                                                                   userToken, UKRAINIAN.getLanguageCode(),
+                                                                   LearningItemFixture.buildCustomCreateRequest(0, "слава", "glory"))
+                                                           .expectStatus().isOk()
+                                                           .expectBody(LearningItemResponse.class)
+                                                           .returnResult()
+                                                           .getResponseBody();
 
         verifyLearningItemListResponse(UKRAINIAN, new LearningItemListResponse(List.of(learningItemResponse2)));
     }
@@ -102,17 +101,17 @@ public class LearningItemsApiTest extends BaseFuncTest {
     @Test
     void returnsBadRequestIfAddingLearningItemForNotStudiedLanguage() {
         learningItemsTestClient.addLearningItem(userToken, UKRAINIAN.getLanguageCode(),
-                                                new CreateLearningItemRequest("слава", "glory"))
+                                                LearningItemFixture.buildCustomCreateRequest(0, "слава", "glory"))
                                .expectStatus()
                                .isBadRequest()
                                .expectBody()
                                .json("""
-                                         {
-                                           "path": "/api/languages/uk/learning-items",
-                                           "status": 400,
-                                           "error": "Bad Request",
-                                           "message": "Language is not studied. Language code: uk"
-                                         }""")
+                                             {
+                                               "path": "/api/languages/uk/learning-items",
+                                               "status": 400,
+                                               "error": "Bad Request",
+                                               "message": "Language is not studied. Language code: uk"
+                                             }""")
                                .jsonPath("$.requestId").isNotEmpty();
     }
 
@@ -120,12 +119,12 @@ public class LearningItemsApiTest extends BaseFuncTest {
     void deletesLearningItemById() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
         LearningItemResponse learningItemResponse1 = learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(),
-                                                                                             new CreateLearningItemRequest("learningItem-1", "meaning-1"))
+                                                                                             LearningItemFixture.buildCreateRequest(1))
                                                                             .expectBody(LearningItemResponse.class)
                                                                             .returnResult()
                                                                             .getResponseBody();
         LearningItemResponse learningItemResponse2 = learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(),
-                                                                                             new CreateLearningItemRequest("learningItem-2", "meaning-2"))
+                                                                                             LearningItemFixture.buildCreateRequest(2))
                                                                             .expectBody(LearningItemResponse.class)
                                                                             .returnResult()
                                                                             .getResponseBody();
@@ -147,17 +146,17 @@ public class LearningItemsApiTest extends BaseFuncTest {
     void returnsLearningItemsInOrderOfCreation() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
         LearningItemResponse learningItemResponse1 = learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(),
-                                                                                             new CreateLearningItemRequest("z-learningItem", "meaning-1"))
+                                                                                             LearningItemFixture.buildCreateRequest(1))
                                                                             .expectBody(LearningItemResponse.class)
                                                                             .returnResult()
                                                                             .getResponseBody();
         LearningItemResponse learningItemResponse2 = learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(),
-                                                                                             new CreateLearningItemRequest("x-learningItem", "meaning-2"))
+                                                                                             LearningItemFixture.buildCreateRequest(2))
                                                                             .expectBody(LearningItemResponse.class)
                                                                             .returnResult()
                                                                             .getResponseBody();
         LearningItemResponse learningItemResponse3 = learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(),
-                                                                                             new CreateLearningItemRequest("y-learningItem", "meaning-3"))
+                                                                                             LearningItemFixture.buildCreateRequest(3))
                                                                             .expectBody(LearningItemResponse.class)
                                                                             .returnResult()
                                                                             .getResponseBody();
@@ -169,13 +168,19 @@ public class LearningItemsApiTest extends BaseFuncTest {
     void editsLearningItem() {
         userLanguagesTestClient.addLanguage(userToken, ENGLISH.getLanguageCode());
         LearningItemResponse learningItemResponse = learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(),
-                                                                                            new CreateLearningItemRequest("learningItem-1", "meaning-1"))
+                                                                                            LearningItemFixture.buildCreateRequest())
                                                                            .expectBody(LearningItemResponse.class)
                                                                            .returnResult()
                                                                            .getResponseBody();
         verifyLearningItemListResponse(ENGLISH, new LearningItemListResponse(List.of(learningItemResponse)));
 
-        var request = new EditLearningItemRequest("learningItem-1-edited", "meaning-1-edited");
+        var definitions = List.of(LearningItemFixture.definitionWebBuilder(0)
+                                                     .definition("meaning-1-edited")
+                                                     .build());
+        var request = LearningItemFixture.editRequestBuilder(0)
+                                         .text("learningItem-1-edited")
+                                         .definitions(definitions)
+                                         .build();
         LearningItemResponse editedLearningItemResponse = learningItemsTestClient.editLearningItem(userToken, ENGLISH.getLanguageCode(),
                                                                                                    learningItemResponse.id(), request)
                                                                                  .expectStatus().isOk()
@@ -186,7 +191,10 @@ public class LearningItemsApiTest extends BaseFuncTest {
         assertThat(editedLearningItemResponse)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
-                .isEqualTo(new LearningItemResponse(null, "learningItem-1-edited", "meaning-1-edited", null));
+                .isEqualTo(LearningItemFixture.responseBuilder(0)
+                                              .text("learningItem-1-edited")
+                                              .definitions(definitions)
+                                              .build());
         assertThat(editedLearningItemResponse.id()).isNotBlank();
 
         verifyLearningItemListResponse(ENGLISH, new LearningItemListResponse(List.of(editedLearningItemResponse)));

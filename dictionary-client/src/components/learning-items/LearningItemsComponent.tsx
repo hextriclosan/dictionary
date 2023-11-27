@@ -48,7 +48,6 @@ const EditableCell: React.FC<EditableCellProps> = ({
     const [editing, setEditing] = useState(false);
     const inputRef = useRef<InputRef>(null);
     const form = useContext(EditableContext)!;
-
     useEffect(() => {
         if (editing) {
             inputRef.current!.focus();
@@ -57,15 +56,30 @@ const EditableCell: React.FC<EditableCellProps> = ({
 
     const toggleEdit = () => {
         setEditing(!editing);
-        form.setFieldsValue({[dataIndex]: record[dataIndex]});
+        if (dataIndex === 'definitions') {
+            const definitions = record[dataIndex];
+            const translation = definitions?.at(0)?.translation;
+            form.setFieldsValue({[dataIndex]: translation});
+        } else {
+            form.setFieldsValue({[dataIndex]: record[dataIndex]});
+        }
     };
 
     const save = async () => {
         try {
-            const values = await form.validateFields();
-
+            const values = (await form.validateFields()) as { [key: string]: string };
+            console.log("Saving", values, record);
             toggleEdit();
-            handleSave({...record, ...values});
+            if (dataIndex === 'definitions') {
+                const definitions = record[dataIndex];
+                const definition = definitions?.at(0);
+                const newDefinition = {...definition, translation: values[dataIndex]};
+                const newDefinitions = [newDefinition];
+                handleSave({...record, ...{definitions: newDefinitions}});
+            } else {
+                handleSave({...record, ...values});
+            }
+
         } catch (errInfo) {
             console.log('Save failed:', errInfo);
         }
@@ -152,9 +166,13 @@ function LearningItemsComponent() {
         },
         {
             title: 'Translation',
-            dataIndex: 'translation',
+            dataIndex: 'definitions',
             key: 'translation',
-            editable: true
+            editable: true,
+            render: (_, learningItem: LearningItem) => {
+                const translation = learningItem?.definitions?.map((definition) => definition.translation)?.join(", ") ?? ""
+                return translation;
+            },
         },
         {
             title: 'Tags',
@@ -166,7 +184,7 @@ function LearningItemsComponent() {
             title: 'Action',
             key: 'action',
             render: (_, learningItem: LearningItem) => (
-                <Button onClick={() => removeLearningItem(learningItem)}><DeleteOutlined /></Button>
+                <Button onClick={() => removeLearningItem(learningItem)}><DeleteOutlined/></Button>
             ),
         },
     ];
@@ -187,15 +205,17 @@ function LearningItemsComponent() {
         };
     });
 
-    const handleSave = (row: LearningItem) => {
+    const handleSave = async (learningItem: LearningItem) => {
+        console.log("Saving", learningItem);
         const newData = [...learningItems];
-        const index = newData.findIndex((item) => row.id === item.id);
+        const index = newData.findIndex((item) => learningItem.id === item.id);
         const item = newData[index];
         newData.splice(index, 1, {
             ...item,
-            ...row,
+            ...learningItem,
         });
         setLearningItems(newData);
+        await dictionaryClient.updateLearningItem(currentLanguage!, learningItem);
     };
 
     const components = {
@@ -209,11 +229,12 @@ function LearningItemsComponent() {
     return (
         <div>
             <Title>Learning Items</Title>
-            <AddLearningItemComponent onLearningItemAdded={(learningItem) => setLearningItems([...learningItems, learningItem])}/>
+            <AddLearningItemComponent
+                onLearningItemAdded={(learningItem) => setLearningItems([...learningItems, learningItem])}/>
             <Table dataSource={learningItems}
                    columns={columns as ColumnTypes}
                    components={components}
-                   rowClassName={() => 'editable-row'}
+                   rowClassName={() => 'editable-learningItem'}
                    rowKey="id"
             />
         </div>

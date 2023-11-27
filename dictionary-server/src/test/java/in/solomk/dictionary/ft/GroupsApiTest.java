@@ -7,6 +7,7 @@ import in.solomk.dictionary.api.group.dto.GroupResponse;
 import in.solomk.dictionary.api.learning_item.dto.CreateLearningItemRequest;
 import in.solomk.dictionary.api.learning_item.dto.LearningItemResponse;
 import in.solomk.dictionary.ft.client.GroupsTestClient;
+import in.solomk.dictionary.ft.fixture.LearningItemFixture;
 import in.solomk.dictionary.service.language.SupportedLanguage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,7 +180,7 @@ public class GroupsApiTest extends BaseFuncTest {
                 .returnResult()
                 .getResponseBody();
         var learningItem = learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(),
-                                                           new CreateLearningItemRequest("learningItem-1", "meaning-1"))
+                                                                   LearningItemFixture.buildCreateRequest())
                                           .expectBody(LearningItemResponse.class)
                                           .returnResult()
                                           .getResponseBody();
@@ -210,7 +211,7 @@ public class GroupsApiTest extends BaseFuncTest {
                 .returnResult()
                 .getResponseBody();
         var learningItem = learningItemsTestClient.addLearningItem(userToken, ENGLISH.getLanguageCode(),
-                                                           new CreateLearningItemRequest("learningItem-1", "meaning-1"))
+                                                                   LearningItemFixture.buildCreateRequest())
                                           .expectBody(LearningItemResponse.class)
                                           .returnResult()
                                           .getResponseBody();
