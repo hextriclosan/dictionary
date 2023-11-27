@@ -2,13 +2,13 @@ import React, {useContext, useEffect, useRef, useState} from "react";
 import {LearningItem} from "../../client/model/learning-item";
 import useCurrentLanguage from "../../context/CurrentLanguageContext";
 import AddLearningItemComponent from "./AddLearningItemComponent";
-import {Button, Form, FormInstance, Input, InputRef, Table, Tag, Typography} from 'antd';
+import {Button, Form, FormInstance, Input, InputRef, List, Space, Table, Typography} from 'antd';
 import {ColumnType} from "antd/es/table";
 import "./LearningItemsComponent.css";
-import {DeleteOutlined} from "@ant-design/icons";
+import {DeleteOutlined, MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
 import {useDictionaryClient} from "../../client/learning-items/learning-items-client";
 
-const {Title} = Typography;
+const {Title, Text} = Typography;
 
 const EditableContext = React.createContext<FormInstance<any> | null>(null);
 
@@ -50,19 +50,14 @@ const EditableCell: React.FC<EditableCellProps> = ({
     const form = useContext(EditableContext)!;
     useEffect(() => {
         if (editing) {
-            inputRef.current!.focus();
+            inputRef.current?.focus();
         }
     }, [editing]);
 
     const toggleEdit = () => {
         setEditing(!editing);
-        if (dataIndex === 'definitions') {
-            const definitions = record[dataIndex];
-            const translation = definitions?.at(0)?.translation;
-            form.setFieldsValue({[dataIndex]: translation});
-        } else {
-            form.setFieldsValue({[dataIndex]: record[dataIndex]});
-        }
+        form.setFieldsValue({[dataIndex]: record[dataIndex]});
+        console.log("Toggling edit", {[dataIndex]: record[dataIndex]})
     };
 
     const save = async () => {
@@ -70,15 +65,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
             const values = (await form.validateFields()) as { [key: string]: string };
             console.log("Saving", values, record);
             toggleEdit();
-            if (dataIndex === 'definitions') {
-                const definitions = record[dataIndex];
-                const definition = definitions?.at(0);
-                const newDefinition = {...definition, translation: values[dataIndex]};
-                const newDefinitions = [newDefinition];
-                handleSave({...record, ...{definitions: newDefinitions}});
-            } else {
-                handleSave({...record, ...values});
-            }
+            handleSave({...record, ...values});
 
         } catch (errInfo) {
             console.log('Save failed:', errInfo);
@@ -88,25 +75,89 @@ const EditableCell: React.FC<EditableCellProps> = ({
     let childNode = children;
 
     if (editable) {
-        childNode = editing ? (
-            <Form.Item
-                style={{margin: 0}}
-                name={dataIndex}
-                rules={[
-                    {
-                        required: true,
-                        message: `${title} is required.`,
-                    },
-                ]}
-            >
-                <Input ref={inputRef} onPressEnter={save} onBlur={save}/>
-            </Form.Item>
-        ) : (
-            <div className="editable-cell-value-wrap" style={{paddingRight: 24}} onClick={toggleEdit}>
-                {children}
-            </div>
-        );
+        if (!editing) {
+            childNode = (
+                <div className="editable-cell-value-wrap" style={{paddingRight: 24}} onClick={toggleEdit}>
+                    {children}
+                </div>
+            )
+        } else if (dataIndex === 'definitions') {
+            childNode = (
+                <Form.List name="definitions"
+                           rules={[
+                               {
+                                   validator: async (_, definitions) => {
+                                       definitions.forEach((definition: any) => {
+                                           if (!definition.definition && !definition.translation) {
+                                               return Promise.reject(new Error('Learning item should contain either definition or translation'));
+                                           }
+                                       });
+                                   },
+                                   message: 'Learning item should contain at least definition or translation'
+                               },
+                           ]}
+                >
+                    {(fields, {add, remove}, {errors}) => (
+                        <>
+                            {fields.map(({key, name, ...restField}) => (
+                                <Space key={key} style={{display: 'flex', marginBottom: 8}} align="baseline">
+                                    <Form.Item
+                                        {...restField}
+                                        name={[name, 'definition']}
+                                    >
+                                        <Input placeholder="Define item"/>
+                                    </Form.Item>
+                                    <Form.Item
+                                        {...restField}
+                                        name={[name, 'translation']}
+                                    >
+                                        <Input placeholder="Translation"/>
+                                    </Form.Item>
+                                    <Form.Item
+                                        {...restField}
+                                        name={[name, 'comment']}
+                                    >
+                                        <Input placeholder="Definition comment"/>
+                                    </Form.Item>
+                                    {fields.length > 1 ? (
+                                        <MinusCircleOutlined
+                                            onClick={() => remove(name)}
+                                        />
+                                    ) : null}
+                                </Space>
+                            ))}
+                            <Form.Item>
+                                <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined/>}>
+                                    Add field
+                                </Button>
+                            </Form.Item>
+                            <Form.ErrorList errors={errors}/>
+                            <Button type="primary" onClick={save}>
+                                Save
+                            </Button>
+                            <Button onClick={() => toggleEdit()} type="default">Cancel</Button>
+                        </>
+                    )}
+                </Form.List>
+            );
+        } else {
+            childNode = (
+                <Form.Item
+                    style={{margin: 0}}
+                    name={dataIndex}
+                    rules={[
+                        {
+                            required: true,
+                            message: `${title} is required.`,
+                        },
+                    ]}
+                >
+                    <Input ref={inputRef} onPressEnter={save} onBlur={save}/>
+                </Form.Item>
+            );
+        }
     }
+
 
     return <td {...restProps}>{childNode}</td>;
 };
@@ -142,19 +193,20 @@ function LearningItemsComponent() {
     }
 
     function renderGroups(learningItemToRender: LearningItem) {
-        return <>
-            {learningItemToRender?.groupIds?.map((tag) => {
-                let color = tag.length > 5 ? 'geekblue' : 'green';
-                if (tag === 'loser') {
-                    color = 'volcano';
-                }
-                return (
-                    <Tag color={color} key={tag}>
-                        {tag.toUpperCase()}
-                    </Tag>
-                );
-            })}
-        </>
+        return <>{learningItemToRender.groupIds?.length}</>
+        // return <>
+        //     {learningItemToRender?.groupIds?.map((tag) => {
+        //         let color = tag.length > 5 ? 'geekblue' : 'green';
+        //         if (tag === 'loser') {
+        //             color = 'volcano';
+        //         }
+        //         return (
+        //             <Tag color={color} key={tag}>
+        //                 {tag.toUpperCase()}
+        //             </Tag>
+        //         );
+        //     })}
+        // </>
     }
 
     const defaultColumns: (ColumnType<LearningItem> & { editable?: boolean; })[] = [
@@ -162,20 +214,37 @@ function LearningItemsComponent() {
             title: 'Text',
             dataIndex: 'text',
             key: 'text',
-            editable: true
+            editable: true,
+            render: (_, learningItem: LearningItem) => {
+                return <Title level={5} style={{marginBottom: 0, marginTop: 0}}>{learningItem.text}</Title>
+            },
         },
         {
-            title: 'Translation',
+            title: 'Definition',
             dataIndex: 'definitions',
             key: 'translation',
             editable: true,
             render: (_, learningItem: LearningItem) => {
                 const translation = learningItem?.definitions?.map((definition) => definition.translation)?.join(", ") ?? ""
-                return translation;
+                // return translation;
+                return <List
+                    itemLayout="horizontal"
+                    dataSource={learningItem.definitions}
+                    renderItem={(item, index) => (
+                        <List.Item>
+                            <List.Item.Meta
+                                title={item.definition ?? item.translation}
+                                description={item.comment}
+                            >
+                            </List.Item.Meta>
+                            <div hidden={!item.definition}>{item.translation}</div>
+                        </List.Item>
+                    )}
+                />
             },
         },
         {
-            title: 'Tags',
+            title: 'Groups',
             key: 'groupIds',
             dataIndex: 'groupIds',
             render: (_, learningItem: LearningItem) => renderGroups(learningItem),
@@ -183,6 +252,7 @@ function LearningItemsComponent() {
         {
             title: 'Action',
             key: 'action',
+            width: 50,
             render: (_, learningItem: LearningItem) => (
                 <Button onClick={() => removeLearningItem(learningItem)}><DeleteOutlined/></Button>
             ),
@@ -234,8 +304,13 @@ function LearningItemsComponent() {
             <Table dataSource={learningItems}
                    columns={columns as ColumnTypes}
                    components={components}
-                   rowClassName={() => 'editable-learningItem'}
+                   rowClassName={() => 'editable-row'}
                    rowKey="id"
+                   size="small"
+                   expandable={{
+                       expandedRowRender: (record) => <p style={{margin: 0}}>{record.comment}</p>,
+                       rowExpandable: (record) => record.comment,
+                   }}
             />
         </div>
     );
