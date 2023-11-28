@@ -12,6 +12,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface LearningItemMapper {
 
+    @Mapping(target = "userId", ignore = true)
+    @Mapping(target = "languageCode", ignore = true)
     LearningItemDocument toDocument(LearningItem learningItem);
 
     @Mapping(target = "id", ignore = true)
