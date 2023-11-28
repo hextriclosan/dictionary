@@ -86,8 +86,3 @@ tasks.withType<BootBuildImage> {
     }
      */
 }
-
-// todo: remove after migrating to Spring Boot 3.2+
-tasks.named<BootBuildImage>("bootBuildImage") {
-    builder.set("paketobuildpacks/builder-jammy-base:latest")
-}
